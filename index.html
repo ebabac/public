@@ -3,48 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Form</title>
+    <title>Order Form - Login</title>
     <script>
-        let labourRates = {
-            "Customer1": { "000001": 50, "000002": 75 },
-            "Customer2": { "000001": 60, "000002": 80 }
+        let customers = {
+            "user1": { password: "pass123", labourRates: { "000001": 50, "000002": 75 }, goodsDiscounts: { "ItemA": 10, "ItemB": 5 }, currency: "USD" },
+            "user2": { password: "pass456", labourRates: { "000001": 60, "000002": 80 }, goodsDiscounts: { "ItemA": 15, "ItemB": 8 }, currency: "EUR" }
         };
-        
-        let goodsDiscounts = {
-            "Customer1": { "ItemA": 10, "ItemB": 5 },
-            "Customer2": { "ItemA": 15, "ItemB": 8 }
-        };
-        
-        let currencyRates = { "USD": 1, "EUR": 0.92, "GBP": 0.78 };
-        
+
+        let currentUser = null;
+
+        function login() {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            
+            if (customers[username] && customers[username].password === password) {
+                currentUser = customers[username];
+                document.getElementById("login-section").style.display = "none";
+                document.getElementById("form-section").style.display = "block";
+                updateTotals();
+            } else {
+                alert("Invalid login. Please try again.");
+            }
+        }
+
         function updateTotals() {
-            let customer = document.getElementById("customer").value;
+            if (!currentUser) return;
+
             let selectedLabour = document.getElementById("labour").selectedOptions;
             let selectedGoods = document.getElementById("goods").selectedOptions;
-            let currency = document.getElementById("currency").value;
+            let currency = currentUser.currency;
             
             let labourTotal = 0;
             for (let option of selectedLabour) {
                 let code = option.value;
-                labourTotal += labourRates[customer]?.[code] || 0;
+                labourTotal += currentUser.labourRates?.[code] || 0;
             }
             
             let goodsTotal = 0;
             for (let option of selectedGoods) {
                 let item = option.value;
-                goodsTotal += 100 - (goodsDiscounts[customer]?.[item] || 0); // Assume base price 100
+                goodsTotal += 100 - (currentUser.goodsDiscounts?.[item] || 0); // Assume base price 100
             }
             
-            let total = (labourTotal + goodsTotal) * currencyRates[currency];
+            let total = labourTotal + goodsTotal;
             document.getElementById("total").innerText = `Total: ${total.toFixed(2)} ${currency}`;
         }
-        
+
         function submitForm() {
+            if (!currentUser) return;
+
             let formData = {
-                customer: document.getElementById("customer").value,
+                user: document.getElementById("username").value,
                 labour: Array.from(document.getElementById("labour").selectedOptions).map(o => o.value),
                 goods: Array.from(document.getElementById("goods").selectedOptions).map(o => o.value),
-                currency: document.getElementById("currency").value,
+                currency: currentUser.currency,
                 total: document.getElementById("total").innerText
             };
             
@@ -58,33 +70,31 @@
     </script>
 </head>
 <body>
-    <h2>Order Form</h2>
-    <label>Customer:</label>
-    <select id="customer" onchange="updateTotals()">
-        <option value="Customer1">Customer 1</option>
-        <option value="Customer2">Customer 2</option>
-    </select>
-    
-    <label>Labour Codes:</label>
-    <select id="labour" multiple onchange="updateTotals()">
-        <option value="000001">Fault memory check</option>
-        <option value="000002">Fault memory clear</option>
-    </select>
-    
-    <label>Goods:</label>
-    <select id="goods" multiple onchange="updateTotals()">
-        <option value="ItemA">Item A</option>
-        <option value="ItemB">Item B</option>
-    </select>
-    
-    <label>Currency:</label>
-    <select id="currency" onchange="updateTotals()">
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="GBP">GBP</option>
-    </select>
-    
-    <h3 id="total">Total: 0 USD</h3>
-    <button onclick="submitForm()">Submit</button>
+    <div id="login-section">
+        <h2>Login</h2>
+        <label>Username:</label>
+        <input type="text" id="username">
+        <label>Password:</label>
+        <input type="password" id="password">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div id="form-section" style="display:none;">
+        <h2>Order Form</h2>
+        <label>Labour Codes:</label>
+        <select id="labour" multiple onchange="updateTotals()">
+            <option value="000001">Fault memory check</option>
+            <option value="000002">Fault memory clear</option>
+        </select>
+        
+        <label>Goods:</label>
+        <select id="goods" multiple onchange="updateTotals()">
+            <option value="ItemA">Item A</option>
+            <option value="ItemB">Item B</option>
+        </select>
+        
+        <h3 id="total">Total: 0</h3>
+        <button onclick="submitForm()">Submit</button>
+    </div>
 </body>
 </html>

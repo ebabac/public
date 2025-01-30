@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Form</title>
+    <script>
+        let labourRates = {
+            "Customer1": { "000001": 50, "000002": 75 },
+            "Customer2": { "000001": 60, "000002": 80 }
+        };
+        
+        let goodsDiscounts = {
+            "Customer1": { "ItemA": 10, "ItemB": 5 },
+            "Customer2": { "ItemA": 15, "ItemB": 8 }
+        };
+        
+        let currencyRates = { "USD": 1, "EUR": 0.92, "GBP": 0.78 };
+        
+        function updateTotals() {
+            let customer = document.getElementById("customer").value;
+            let selectedLabour = document.getElementById("labour").selectedOptions;
+            let selectedGoods = document.getElementById("goods").selectedOptions;
+            let currency = document.getElementById("currency").value;
+            
+            let labourTotal = 0;
+            for (let option of selectedLabour) {
+                let code = option.value;
+                labourTotal += labourRates[customer]?.[code] || 0;
+            }
+            
+            let goodsTotal = 0;
+            for (let option of selectedGoods) {
+                let item = option.value;
+                goodsTotal += 100 - (goodsDiscounts[customer]?.[item] || 0); // Assume base price 100
+            }
+            
+            let total = (labourTotal + goodsTotal) * currencyRates[currency];
+            document.getElementById("total").innerText = `Total: ${total.toFixed(2)} ${currency}`;
+        }
+        
+        function submitForm() {
+            let formData = {
+                customer: document.getElementById("customer").value,
+                labour: Array.from(document.getElementById("labour").selectedOptions).map(o => o.value),
+                goods: Array.from(document.getElementById("goods").selectedOptions).map(o => o.value),
+                currency: document.getElementById("currency").value,
+                total: document.getElementById("total").innerText
+            };
+            
+            fetch("YOUR_POWER_AUTOMATE_FLOW_URL", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            }).then(response => alert("Order submitted successfully!"))
+              .catch(error => alert("Error submitting order."));
+        }
+    </script>
+</head>
+<body>
+    <h2>Order Form</h2>
+    <label>Customer:</label>
+    <select id="customer" onchange="updateTotals()">
+        <option value="Customer1">Customer 1</option>
+        <option value="Customer2">Customer 2</option>
+    </select>
+    
+    <label>Labour Codes:</label>
+    <select id="labour" multiple onchange="updateTotals()">
+        <option value="000001">Fault memory check</option>
+        <option value="000002">Fault memory clear</option>
+    </select>
+    
+    <label>Goods:</label>
+    <select id="goods" multiple onchange="updateTotals()">
+        <option value="ItemA">Item A</option>
+        <option value="ItemB">Item B</option>
+    </select>
+    
+    <label>Currency:</label>
+    <select id="currency" onchange="updateTotals()">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="GBP">GBP</option>
+    </select>
+    
+    <h3 id="total">Total: 0 USD</h3>
+    <button onclick="submitForm()">Submit</button>
+</body>
+</html>

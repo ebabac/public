@@ -1,100 +1,136 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Form - Login</title>
-    <script>
-        let customers = {
-            "user1": { password: "pass123", labourRates: { "000001": 50, "000002": 75 }, goodsDiscounts: { "ItemA": 10, "ItemB": 5 }, currency: "USD" },
-            "user2": { password: "pass456", labourRates: { "000001": 60, "000002": 80 }, goodsDiscounts: { "ItemA": 15, "ItemB": 8 }, currency: "EUR" }
-        };
+import React, { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem } from '@/components/ui/select';
 
-        let currentUser = null;
+const distributors = [
+  // Placeholder for distributor data to be loaded via Power Automate
+  { username: 'distributor1', password: 'pass1', name: 'Distributor 1', labourRate: 50, travelRate: 20, mileageRate: 0.5, partReimbursementRate: 80, obReimbursementRate: 90, currency: 'USD' },
+  // Add more distributors here
+];
 
-        function login() {
-            let username = document.getElementById("username").value;
-            let password = document.getElementById("password").value;
-            
-            if (customers[username] && customers[username].password === password) {
-                currentUser = customers[username];
-                document.getElementById("login-section").style.display = "none";
-                document.getElementById("form-section").style.display = "block";
-                updateTotals();
-            } else {
-                alert("Invalid login. Please try again.");
-            }
-        }
+const labourCodes = [
+  // Example labour codes
+  { code: 'L001', description: 'Engine Check', time: 2 },
+  { code: 'L002', description: 'Oil Change', time: 1.5 },
+  // Add more labour codes here
+];
 
-        function updateTotals() {
-            if (!currentUser) return;
+export default function WarrantyClaimForm() {
+  const [user, setUser] = useState(null);
+  const [loginData, setLoginData] = useState({ username: '', password: '' });
+  const [claimData, setClaimData] = useState({ obSerial: '', vesselName: '', caseNumber: '', warrantyEndDate: '', faultCode: '' });
+  const [selectedLabours, setSelectedLabours] = useState([]);
+  const [grandTotal, setGrandTotal] = useState(0);
 
-            let selectedLabour = document.getElementById("labour").selectedOptions;
-            let selectedGoods = document.getElementById("goods").selectedOptions;
-            let currency = currentUser.currency;
-            
-            let labourTotal = 0;
-            for (let option of selectedLabour) {
-                let code = option.value;
-                labourTotal += currentUser.labourRates?.[code] || 0;
-            }
-            
-            let goodsTotal = 0;
-            for (let option of selectedGoods) {
-                let item = option.value;
-                goodsTotal += 100 - (currentUser.goodsDiscounts?.[item] || 0); // Assume base price 100
-            }
-            
-            let total = labourTotal + goodsTotal;
-            document.getElementById("total").innerText = `Total: ${total.toFixed(2)} ${currency}`;
-        }
+  const handleLogin = () => {
+    const foundUser = distributors.find(
+      (d) => d.username === loginData.username && d.password === loginData.password
+    );
+    if (foundUser) setUser(foundUser);
+    else alert('Invalid credentials');
+  };
 
-        function submitForm() {
-            if (!currentUser) return;
+  const handleLabourSelect = (code) => {
+    const labour = labourCodes.find((l) => l.code === code);
+    if (labour) {
+      const cost = labour.time * user.labourRate;
+      const newLabour = { ...labour, cost };
+      const updatedLabours = [...selectedLabours, newLabour];
+      setSelectedLabours(updatedLabours);
+      setGrandTotal(updatedLabours.reduce((sum, l) => sum + l.cost, 0));
+    }
+  };
 
-            let formData = {
-                user: document.getElementById("username").value,
-                labour: Array.from(document.getElementById("labour").selectedOptions).map(o => o.value),
-                goods: Array.from(document.getElementById("goods").selectedOptions).map(o => o.value),
-                currency: currentUser.currency,
-                total: document.getElementById("total").innerText
-            };
-            
-            fetch("YOUR_POWER_AUTOMATE_FLOW_URL", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            }).then(response => alert("Order submitted successfully!"))
-              .catch(error => alert("Error submitting order."));
-        }
-    </script>
-</head>
-<body>
-    <div id="login-section">
-        <h2>Login</h2>
-        <label>Username:</label>
-        <input type="text" id="username">
-        <label>Password:</label>
-        <input type="password" id="password">
-        <button onclick="login()">Login</button>
-    </div>
+  if (!user) {
+    return (
+      <Card className="max-w-md mx-auto mt-10 p-4">
+        <CardContent>
+          <h2 className="text-xl font-bold mb-4">Distributor Login</h2>
+          <Input
+            placeholder="Username"
+            value={loginData.username}
+            onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+            className="mb-2"
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={loginData.password}
+            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+            className="mb-4"
+          />
+          <Button onClick={handleLogin}>Login</Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
-    <div id="form-section" style="display:none;">
-        <h2>Order Form</h2>
-        <label>Labour Codes:</label>
-        <select id="labour" multiple onchange="updateTotals()">
-            <option value="000001">Fault memory check</option>
-            <option value="000002">Fault memory clear</option>
-        </select>
-        
-        <label>Goods:</label>
-        <select id="goods" multiple onchange="updateTotals()">
-            <option value="ItemA">Item A</option>
-            <option value="ItemB">Item B</option>
-        </select>
-        
-        <h3 id="total">Total: 0</h3>
-        <button onclick="submitForm()">Submit</button>
-    </div>
-</body>
-</html>
+  return (
+    <Card className="max-w-2xl mx-auto mt-10 p-6">
+      <CardContent>
+        <h2 className="text-2xl font-bold mb-4">Warranty Claim Form</h2>
+        <div className="mb-4">
+          <p><strong>Distributor:</strong> {user.name}</p>
+          <p><strong>Labour Rate:</strong> {user.labourRate} {user.currency}</p>
+          <p><strong>Travel Rate:</strong> {user.travelRate} {user.currency}</p>
+          <p><strong>Mileage Rate:</strong> {user.mileageRate} {user.currency}/mile</p>
+          <p><strong>Part Reimbursement Rate:</strong> {user.partReimbursementRate}%</p>
+          <p><strong>OB Reimbursement Rate:</strong> {user.obReimbursementRate}%</p>
+          <p><strong>Currency:</strong> {user.currency}</p>
+        </div>
+
+        <Input
+          placeholder="OB Serial Number (20 digits)"
+          value={claimData.obSerial}
+          onChange={(e) => setClaimData({ ...claimData, obSerial: e.target.value })}
+          className="mb-2"
+        />
+        <Input
+          placeholder="Vessel Name"
+          value={claimData.vesselName}
+          onChange={(e) => setClaimData({ ...claimData, vesselName: e.target.value })}
+          className="mb-2"
+        />
+        <Input
+          placeholder="Salesforce Case Number (8 digits)"
+          value={claimData.caseNumber}
+          onChange={(e) => setClaimData({ ...claimData, caseNumber: e.target.value })}
+          className="mb-2"
+        />
+        <Input
+          type="date"
+          value={claimData.warrantyEndDate}
+          onChange={(e) => setClaimData({ ...claimData, warrantyEndDate: e.target.value })}
+          className="mb-2"
+        />
+        <Input
+          placeholder="Fault Code"
+          value={claimData.faultCode}
+          onChange={(e) => setClaimData({ ...claimData, faultCode: e.target.value })}
+          className="mb-4"
+        />
+
+        <Select onValueChange={handleLabourSelect}>
+          <SelectItem value="" disabled>Select Labour Code</SelectItem>
+          {labourCodes.map((labour) => (
+            <SelectItem key={labour.code} value={labour.code}>
+              {labour.code} - {labour.description} ({labour.time} hrs)
+            </SelectItem>
+          ))}
+        </Select>
+
+        <div className="mt-4">
+          <h3 className="text-xl font-bold">Selected Labours</h3>
+          {selectedLabours.map((labour, idx) => (
+            <p key={idx}>{labour.code} - {labour.description}: {labour.cost.toFixed(2)} {user.currency}</p>
+          ))}
+          <p className="mt-2 font-bold">Grand Total: {grandTotal.toFixed(2)} {user.currency}</p>
+        </div>
+
+        <Button className="mt-4">Confirm and Continue</Button>
+      </CardContent>
+    </Card>
+  );
+}

@@ -43,11 +43,12 @@ export default function WarrantyClaimForm() {
     }
   };
 
+  // Show only login screen initially
   if (!user) {
     return (
-      <Card className="max-w-md mx-auto mt-10 p-4">
+      <Card className="max-w-md mx-auto mt-40 p-4 shadow-lg">
         <CardContent>
-          <h2 className="text-xl font-bold mb-4">Distributor Login</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">Distributor Login</h2>
           <Input
             placeholder="Username"
             value={loginData.username}
@@ -61,14 +62,14 @@ export default function WarrantyClaimForm() {
             onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
             className="mb-4"
           />
-          <Button onClick={handleLogin}>Login</Button>
+          <Button className="w-full" onClick={handleLogin}>Login</Button>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="max-w-2xl mx-auto mt-10 p-6">
+    <Card className="max-w-2xl mx-auto mt-10 p-6 shadow-lg">
       <CardContent>
         <h2 className="text-2xl font-bold mb-4">Warranty Claim Form</h2>
         <div className="mb-4">

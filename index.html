@@ -1,138 +1,137 @@
-{
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectItem } from '@/components/ui/select';
-
-const distributors = [
-  // Placeholder for distributor data to be loaded via Power Automate
-  { username: 'distributor1', password: 'pass1', name: 'Distributor 1', labourRate: 50, travelRate: 20, mileageRate: 0.5, partReimbursementRate: 80, obReimbursementRate: 90, currency: 'USD' },
-  // Add more distributors here
-];
-
-const labourCodes = [
-  // Example labour codes
-  { code: 'L001', description: 'Engine Check', time: 2 },
-  { code: 'L002', description: 'Oil Change', time: 1.5 },
-  // Add more labour codes here
-];
-
-export default function WarrantyClaimForm() {
-  const [user, setUser] = useState(null);
-  const [loginData, setLoginData] = useState({ username: '', password: '' });
-  const [claimData, setClaimData] = useState({ obSerial: '', vesselName: '', caseNumber: '', warrantyEndDate: '', faultCode: '' });
-  const [selectedLabours, setSelectedLabours] = useState([]);
-  const [grandTotal, setGrandTotal] = useState(0);
-
-  const handleLogin = () => {
-    const foundUser = distributors.find(
-      (d) => d.username === loginData.username && d.password === loginData.password
-    );
-    if (foundUser) setUser(foundUser);
-    else alert('Invalid credentials');
-  };
-
-  const handleLabourSelect = (code) => {
-    const labour = labourCodes.find((l) => l.code === code);
-    if (labour) {
-      const cost = labour.time * user.labourRate;
-      const newLabour = { ...labour, cost };
-      const updatedLabours = [...selectedLabours, newLabour];
-      setSelectedLabours(updatedLabours);
-      setGrandTotal(updatedLabours.reduce((sum, l) => sum + l.cost, 0));
-    }
-  };
-
-  // Show only login screen initially
-  if (!user) {
-    return (
-      <Card className="max-w-md mx-auto mt-40 p-4 shadow-lg">
-        <CardContent>
-          <h2 className="text-2xl font-bold mb-4 text-center">Distributor Login</h2>
-          <Input
-            placeholder="Username"
-            value={loginData.username}
-            onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
-            className="mb-2"
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={loginData.password}
-            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-            className="mb-4"
-          />
-          <Button className="w-full" onClick={handleLogin}>Login</Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="max-w-2xl mx-auto mt-10 p-6 shadow-lg">
-      <CardContent>
-        <h2 className="text-2xl font-bold mb-4">Warranty Claim Form</h2>
-        <div className="mb-4">
-          <p><strong>Distributor:</strong> {user.name}</p>
-          <p><strong>Labour Rate:</strong> {user.labourRate} {user.currency}</p>
-          <p><strong>Travel Rate:</strong> {user.travelRate} {user.currency}</p>
-          <p><strong>Mileage Rate:</strong> {user.mileageRate} {user.currency}/mile</p>
-          <p><strong>Part Reimbursement Rate:</strong> {user.partReimbursementRate}%</p>
-          <p><strong>OB Reimbursement Rate:</strong> {user.obReimbursementRate}%</p>
-          <p><strong>Currency:</strong> {user.currency}</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warranty Claim Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 400px; }
+        h2 { text-align: center; }
+        input, select, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #ccc; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        .hidden { display: none; }
+        .distributor-info p { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="login-screen">
+            <h2>Distributor Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="handleLogin()">Login</button>
         </div>
 
-        <Input
-          placeholder="OB Serial Number (20 digits)"
-          value={claimData.obSerial}
-          onChange={(e) => setClaimData({ ...claimData, obSerial: e.target.value })}
-          className="mb-2"
-        />
-        <Input
-          placeholder="Vessel Name"
-          value={claimData.vesselName}
-          onChange={(e) => setClaimData({ ...claimData, vesselName: e.target.value })}
-          className="mb-2"
-        />
-        <Input
-          placeholder="Salesforce Case Number (8 digits)"
-          value={claimData.caseNumber}
-          onChange={(e) => setClaimData({ ...claimData, caseNumber: e.target.value })}
-          className="mb-2"
-        />
-        <Input
-          type="date"
-          value={claimData.warrantyEndDate}
-          onChange={(e) => setClaimData({ ...claimData, warrantyEndDate: e.target.value })}
-          className="mb-2"
-        />
-        <Input
-          placeholder="Fault Code"
-          value={claimData.faultCode}
-          onChange={(e) => setClaimData({ ...claimData, faultCode: e.target.value })}
-          className="mb-4"
-        />
+        <div id="form-screen" class="hidden">
+            <h2>Warranty Claim Form</h2>
+            <div class="distributor-info" id="distributor-info"></div>
 
-        <Select onValueChange={handleLabourSelect}>
-          <SelectItem value="" disabled>Select Labour Code</SelectItem>
-          {labourCodes.map((labour) => (
-            <SelectItem key={labour.code} value={labour.code}>
-              {labour.code} - {labour.description} ({labour.time} hrs)
-            </SelectItem>
-          ))}
-        </Select>
+            <input type="text" id="obSerial" placeholder="OB Serial Number (20 digits)">
+            <input type="text" id="vesselName" placeholder="Vessel Name">
+            <input type="text" id="caseNumber" placeholder="Salesforce Case Number (8 digits)">
+            <input type="date" id="warrantyEndDate">
+            <input type="text" id="faultCode" placeholder="Fault Code">
 
-        <div className="mt-4">
-          <h3 className="text-xl font-bold">Selected Labours</h3>
-          {selectedLabours.map((labour, idx) => (
-            <p key={idx}>{labour.code} - {labour.description}: {labour.cost.toFixed(2)} {user.currency}</p>
-          ))}
-          <p className="mt-2 font-bold">Grand Total: {grandTotal.toFixed(2)} {user.currency}</p>
+            <select id="labourSelect">
+                <option value="">Select Labour Code</option>
+            </select>
+
+            <div id="selectedLabours"></div>
+            <p id="grandTotal"></p>
+            <button onclick="confirmAndContinue()">Confirm and Continue</button>
         </div>
+    </div>
 
-        <Button className="mt-4">Confirm and Continue</Button>
-      </CardContent>
-    </Card>
-  );
-}
+    <script>
+        const distributors = [
+            { username: 'distributor1', password: 'pass1', name: 'Distributor 1', labourRate: 50, travelRate: 20, mileageRate: 0.5, partReimbursementRate: 80, obReimbursementRate: 90, currency: 'USD' }
+        ];
+
+        const labourCodes = [
+            { code: 'L001', description: 'Engine Check', time: 2 },
+            { code: 'L002', description: 'Oil Change', time: 1.5 }
+        ];
+
+        let currentUser = null;
+        let selectedLabours = [];
+
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const user = distributors.find(d => d.username === username && d.password === password);
+
+            if (user) {
+                currentUser = user;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('form-screen').classList.remove('hidden');
+                displayDistributorInfo();
+                populateLabourCodes();
+            } else {
+                alert('Invalid credentials');
+            }
+        }
+
+        function displayDistributorInfo() {
+            const infoDiv = document.getElementById('distributor-info');
+            infoDiv.innerHTML = `
+                <p><strong>Distributor:</strong> ${currentUser.name}</p>
+                <p><strong>Labour Rate:</strong> ${currentUser.labourRate} ${currentUser.currency}</p>
+                <p><strong>Travel Rate:</strong> ${currentUser.travelRate} ${currentUser.currency}</p>
+                <p><strong>Mileage Rate:</strong> ${currentUser.mileageRate} ${currentUser.currency}/mile</p>
+                <p><strong>Part Reimbursement Rate:</strong> ${currentUser.partReimbursementRate}%</p>
+                <p><strong>OB Reimbursement Rate:</strong> ${currentUser.obReimbursementRate}%</p>
+                <p><strong>Currency:</strong> ${currentUser.currency}</p>
+            `;
+        }
+
+        function populateLabourCodes() {
+            const select = document.getElementById('labourSelect');
+            labourCodes.forEach(labour => {
+                const option = document.createElement('option');
+                option.value = labour.code;
+                option.textContent = `${labour.code} - ${labour.description} (${labour.time} hrs)`;
+                select.appendChild(option);
+            });
+
+            select.addEventListener('change', (e) => {
+                const code = e.target.value;
+                if (code) addLabour(code);
+            });
+        }
+
+        function addLabour(code) {
+            const labour = labourCodes.find(l => l.code === code);
+            if (labour) {
+                const cost = labour.time * currentUser.labourRate;
+                selectedLabours.push({ ...labour, cost });
+                updateSelectedLabours();
+            }
+        }
+
+        function updateSelectedLabours() {
+            const container = document.getElementById('selectedLabours');
+            container.innerHTML = '';
+            selectedLabours.forEach(labour => {
+                const p = document.createElement('p');
+                p.textContent = `${labour.code} - ${labour.description}: ${labour.cost.toFixed(2)} ${currentUser.currency}`;
+                container.appendChild(p);
+            });
+
+            const grandTotal = selectedLabours.reduce((sum, l) => sum + l.cost, 0);
+            document.getElementById('grandTotal').textContent = `Grand Total: ${grandTotal.toFixed(2)} ${currentUser.currency}`;
+        }
+
+        function confirmAndContinue() {
+            if (selectedLabours.length === 0) {
+                alert('Please select at least one labour code.');
+                return;
+            }
+            alert('Claim confirmed. Proceeding to the next step.');
+            // Implement further navigation or form submission here
+        }
+    </script>
+</body>
+</html>

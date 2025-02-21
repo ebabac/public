@@ -1,137 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warranty Claim Form</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 400px; }
-        h2 { text-align: center; }
-        input, select, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 4px; border: 1px solid #ccc; }
-        button { background-color: #28a745; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #218838; }
-        .hidden { display: none; }
-        .distributor-info p { margin: 5px 0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warranty Claim Form</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 600px; margin: auto; }
+    .hidden { display: none; }
+    label { display: block; margin-top: 10px; }
+    input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
+    .labour-list { margin-top: 10px; }
+    .labour-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .labour-item button { margin-left: 10px; }
+    .total { font-weight: bold; margin-top: 10px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div id="login-screen">
-            <h2>Distributor Login</h2>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="handleLogin()">Login</button>
-        </div>
-
-        <div id="form-screen" class="hidden">
-            <h2>Warranty Claim Form</h2>
-            <div class="distributor-info" id="distributor-info"></div>
-
-            <input type="text" id="obSerial" placeholder="OB Serial Number (20 digits)">
-            <input type="text" id="vesselName" placeholder="Vessel Name">
-            <input type="text" id="caseNumber" placeholder="Salesforce Case Number (8 digits)">
-            <input type="date" id="warrantyEndDate">
-            <input type="text" id="faultCode" placeholder="Fault Code">
-
-            <select id="labourSelect">
-                <option value="">Select Labour Code</option>
-            </select>
-
-            <div id="selectedLabours"></div>
-            <p id="grandTotal"></p>
-            <button onclick="confirmAndContinue()">Confirm and Continue</button>
-        </div>
+  <div class="container">
+    <div id="login-section">
+      <h2>Distributor Login</h2>
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="Enter username">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter password">
+      <button onclick="handleLogin()">Login</button>
     </div>
 
-    <script>
-        const distributors = [
-            { username: 'distributor1', password: 'pass1', name: 'Distributor 1', labourRate: 50, travelRate: 20, mileageRate: 0.5, partReimbursementRate: 80, obReimbursementRate: 90, currency: 'USD' }
-        ];
+    <div id="form-section" class="hidden">
+      <h2>Warranty Claim Form</h2>
+      <div id="distributor-info"></div>
 
-        const labourCodes = [
-            { code: 'L001', description: 'Engine Check', time: 2 },
-            { code: 'L002', description: 'Oil Change', time: 1.5 }
-        ];
+      <label for="obSerial">OB Serial Number (20 digits)</label>
+      <input type="text" id="obSerial" maxlength="20">
 
-        let currentUser = null;
-        let selectedLabours = [];
+      <label for="vesselName">Vessel Name</label>
+      <input type="text" id="vesselName">
 
-        function handleLogin() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+      <label for="caseNumber">Salesforce Case Number (8 digits)</label>
+      <input type="text" id="caseNumber" maxlength="8">
 
-            const user = distributors.find(d => d.username === username && d.password === password);
+      <label for="warrantyEndDate">Warranty End Date</label>
+      <input type="date" id="warrantyEndDate">
 
-            if (user) {
-                currentUser = user;
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('form-screen').classList.remove('hidden');
-                displayDistributorInfo();
-                populateLabourCodes();
-            } else {
-                alert('Invalid credentials');
-            }
-        }
+      <label for="faultCode">Fault Code</label>
+      <input type="text" id="faultCode">
 
-        function displayDistributorInfo() {
-            const infoDiv = document.getElementById('distributor-info');
-            infoDiv.innerHTML = `
-                <p><strong>Distributor:</strong> ${currentUser.name}</p>
-                <p><strong>Labour Rate:</strong> ${currentUser.labourRate} ${currentUser.currency}</p>
-                <p><strong>Travel Rate:</strong> ${currentUser.travelRate} ${currentUser.currency}</p>
-                <p><strong>Mileage Rate:</strong> ${currentUser.mileageRate} ${currentUser.currency}/mile</p>
-                <p><strong>Part Reimbursement Rate:</strong> ${currentUser.partReimbursementRate}%</p>
-                <p><strong>OB Reimbursement Rate:</strong> ${currentUser.obReimbursementRate}%</p>
-                <p><strong>Currency:</strong> ${currentUser.currency}</p>
-            `;
-        }
+      <label for="labourSelect">Select Labour Code</label>
+      <select id="labourSelect" onchange="handleLabourSelect()">
+        <option value="">--Select--</option>
+      </select>
 
-        function populateLabourCodes() {
-            const select = document.getElementById('labourSelect');
-            labourCodes.forEach(labour => {
-                const option = document.createElement('option');
-                option.value = labour.code;
-                option.textContent = `${labour.code} - ${labour.description} (${labour.time} hrs)`;
-                select.appendChild(option);
-            });
+      <div class="labour-list" id="labourList"></div>
+      <div class="total" id="grandTotal">Grand Total: 0</div>
+      <button onclick="confirmAndContinue()">Confirm and Continue</button>
+    </div>
+  </div>
 
-            select.addEventListener('change', (e) => {
-                const code = e.target.value;
-                if (code) addLabour(code);
-            });
-        }
+  <script>
+    const distributors = [
+      { username: 'distributor1', password: 'pass1', name: 'Distributor 1', labourRate: 50, travelRate: 20, mileageRate: 0.5, partReimbursementRate: 80, obReimbursementRate: 90, currency: 'USD' },
+      // Add more distributors here
+    ];
 
-        function addLabour(code) {
-            const labour = labourCodes.find(l => l.code === code);
-            if (labour) {
-                const cost = labour.time * currentUser.labourRate;
-                selectedLabours.push({ ...labour, cost });
-                updateSelectedLabours();
-            }
-        }
+    const labourCodes = [
+      { code: 'L001', description: 'Engine Check', time: 2 },
+      { code: 'L002', description: 'Oil Change', time: 1.5 },
+      // Add more labour codes here
+    ];
 
-        function updateSelectedLabours() {
-            const container = document.getElementById('selectedLabours');
-            container.innerHTML = '';
-            selectedLabours.forEach(labour => {
-                const p = document.createElement('p');
-                p.textContent = `${labour.code} - ${labour.description}: ${labour.cost.toFixed(2)} ${currentUser.currency}`;
-                container.appendChild(p);
-            });
+    let currentUser = null;
+    let selectedLabours = [];
 
-            const grandTotal = selectedLabours.reduce((sum, l) => sum + l.cost, 0);
-            document.getElementById('grandTotal').textContent = `Grand Total: ${grandTotal.toFixed(2)} ${currentUser.currency}`;
-        }
+    function handleLogin() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const user = distributors.find(d => d.username === username && d.password === password);
+      if (user) {
+        currentUser = user;
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('form-section').classList.remove('hidden');
+        displayDistributorInfo();
+        populateLabourCodes();
+      } else {
+        alert('Invalid credentials');
+      }
+    }
 
-        function confirmAndContinue() {
-            if (selectedLabours.length === 0) {
-                alert('Please select at least one labour code.');
-                return;
-            }
-            alert('Claim confirmed. Proceeding to the next step.');
-            // Implement further navigation or form submission here
-        }
-    </script>
+    function displayDistributorInfo() {
+      const infoDiv = document.getElementById('distributor-info');
+      infoDiv.innerHTML = `
+        <p><strong>Distributor:</strong> ${currentUser.name}</p>
+        <p><strong>Labour Rate:</strong> ${currentUser.labourRate} ${currentUser.currency}</p>
+        <p><strong>Travel Rate:</strong> ${currentUser.travelRate} ${currentUser.currency}</p>
+        <p><strong>Mileage Rate:</strong> ${currentUser.mileageRate} ${currentUser.currency}/mile</p>
+        <p><strong>Part Reimbursement Rate:</strong> ${currentUser.partReimbursementRate}%</p>
+        <p><strong>OB Reimbursement Rate:</strong> ${currentUser.obReimbursementRate}%</p>
+        <p><strong>Currency:</strong> ${currentUser.currency}</p>
+      `;
+    }
+
+    function populateLabourCodes() {
+      const select = document.getElementById('labourSelect');
+      labourCodes.forEach(labour => {
+        const option = document.createElement('option');
+        option.value = labour.code;
+        option.textContent = `${labour.code} - ${labour.description} (${labour.time} hrs)`;
+        select.appendChild(option);
+      });
+    }
+
+    function handleLabourSelect() {
+      const select = document.getElementById('labourSelect');
+      const code = select.value;
+      if (!code) return;
+
+      const labour = labourCodes.find(l => l.code === code);
+      if (labour) {
+        const cost = labour.time * currentUser.labourRate;
+        selectedLabours.push({ ...labour, cost });
+        renderLabourList();
+      }
+      select.value = '';
+    }
+
+    function renderLabourList() {
+      const listDiv = document.getElementById('labourList');
+      listDiv.innerHTML = '';
+      selectedLabours.forEach((labour, index) => {
+        const div = document.createElement('div');
+        div.className = 'labour-item';
+        div.innerHTML = `
+          <span>${labour.code} - ${labour.description}: ${labour.cost.toFixed(2)} ${currentUser.currency}</span>
+          <button onclick="removeLabour(${index})">Delete</button>
+        `;
+        listDiv.appendChild(div);
+      });
+      updateGrandTotal();
+    }
+
+    function removeLabour(index) {
+      selectedLabours.splice(index, 1);
+      renderLabourList();
+    }
+
+    function updateGrandTotal() {
+      const total = selectedLabours.reduce((sum, labour) => sum + labour.cost, 0);
+      document.getElementById('grandTotal').textContent = `Grand Total: ${total.toFixed(2)} ${currentUser.currency}`;
+    }
+
+    function confirmAndContinue() {
+      if (selectedLabours.length === 0) {
+        alert('Please select at least one labour code.');
+        return;
+      }
+      alert('Claim confirmed!');
+      // Further actions can be implemented here
+    }
+  </script>
 </body>
 </html>

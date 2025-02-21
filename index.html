@@ -11,8 +11,8 @@
     label { display: block; margin-top: 10px; }
     input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
     .labour-list { margin-top: 10px; }
-    .labour-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-    .labour-item button { margin-left: 10px; width: 50px; height: 50px; }
+    .labour-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .labour-item button { margin-left: 10px; width: 50px; }
     .total { font-weight: bold; margin-top: 10px; }
   </style>
 </head>
@@ -60,11 +60,13 @@
   <script>
     const distributors = [
       { username: 'distributor1', password: 'pass1', name: 'Distributor 1', labourRate: 50, travelRate: 20, mileageRate: 0.5, partReimbursementRate: 80, obReimbursementRate: 90, currency: 'USD' },
+      // Add more distributors here
     ];
 
     const labourCodes = [
       { code: 'L001', description: 'Engine Check', time: 2 },
       { code: 'L002', description: 'Oil Change', time: 1.5 },
+      // Add more labour codes here
     ];
 
     let currentUser = null;
@@ -148,11 +150,8 @@
     }
 
     function confirmAndContinue() {
-      if (selectedLabours.length === 0) {
-        alert('Please select at least one labour code.');
-        return;
-      }
       alert('Claim confirmed!');
+      // Further actions can be implemented here
     }
   </script>
 </body>

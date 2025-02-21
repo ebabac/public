@@ -37,19 +37,14 @@
       <label for="vesselName">Vessel Name</label>
       <input type="text" id="vesselName">
 
-      <label for="caseNumber">Salesforce Case Number (8 digits)</label>
-      <input type="text" id="caseNumber" maxlength="8">
+      <label for="caseNumber">Salesforce Case Number</label>
+      <input type="text" id="caseNumber">
 
       <label for="warrantyEndDate">Warranty End Date</label>
       <input type="date" id="warrantyEndDate">
 
       <label for="faultCode">Fault Code</label>
       <input type="text" id="faultCode">
-
-      <label for="travelLabour">Travel Labour Hours (0-99)</label>
-      <input type="number" id="travelLabour" min="0" max="99" onchange="handleTravelLabour()">
-
-      <div class="total" id="travelTotal">Travel Labour Total: 0</div>
 
       <label for="labourSelect">Select Labour Code</label>
       <select id="labourSelect" onchange="handleLabourSelect()">
@@ -71,6 +66,11 @@
       </select>
 
       <div class="ob-list" id="obList"></div>
+
+      <label for="travelLabour">Travel Labour Hours (0-99)</label>
+      <input type="number" id="travelLabour" min="0" max="99" onchange="handleTravelLabour()">
+
+      <div class="total" id="travelTotal">Travel Labour Total: 0</div>
 
       <div class="total" id="grandTotal">Grand Total: 0</div>
       <button onclick="confirmAndContinue()">Confirm and Continue</button>

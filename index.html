@@ -160,7 +160,8 @@
         const quantity = prompt(`Enter quantity for ${part.description}:`, 1);
         if (quantity && !isNaN(quantity) && quantity > 0) {
           const convertedPrice = part.price * (currentUser.currency === 'GBP' ? 1 : currentUser.exchangeRate);
-          selectedParts.push({ ...part, quantity: Number(quantity), total: convertedPrice * quantity });
+          const reimbursedPrice = convertedPrice * (currentUser.partReimbursementRate / 100);
+          selectedParts.push({ ...part, quantity: Number(quantity), total: reimbursedPrice * quantity });
           renderPartList();
         }
       }

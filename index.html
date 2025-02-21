@@ -10,9 +10,9 @@
     .hidden { display: none; }
     label { display: block; margin-top: 10px; }
     input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
-    .labour-list, .part-list { margin-top: 10px; }
-    .labour-item, .part-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
-    .labour-item button, .part-item button { margin-left: 10px; width: 50px; }
+    .labour-list, .part-list, .ob-list { margin-top: 10px; }
+    .labour-item, .part-item, .ob-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .labour-item button, .part-item button, .ob-item button { margin-left: 10px; width: 50px; }
     .total { font-weight: bold; margin-top: 10px; }
   </style>
 </head>
@@ -60,6 +60,13 @@
 
       <div class="part-list" id="partList"></div>
 
+      <label for="obSelect">Select OB</label>
+      <select id="obSelect" onchange="handleObSelect()">
+        <option value="">--Select--</option>
+      </select>
+
+      <div class="ob-list" id="obList"></div>
+
       <div class="total" id="grandTotal">Grand Total: 0</div>
       <button onclick="confirmAndContinue()">Confirm and Continue</button>
     </div>
@@ -80,9 +87,15 @@
       { number: 'P002', description: 'Spark Plug', price: 15 },
     ];
 
+    const obList = [
+      { mbom: 'OB001', description: 'Outboard Motor', price: 2000 },
+      { mbom: 'OB002', description: 'Propeller', price: 500 },
+    ];
+
     let currentUser = null;
     let selectedLabours = [];
     let selectedParts = [];
+    let selectedOb = null;
 
     function handleLogin() {
       const username = document.getElementById('username').value;
@@ -95,6 +108,7 @@
         displayDistributorInfo();
         populateLabourCodes();
         populateParts();
+        populateObs();
       } else {
         alert('Invalid credentials');
       }
@@ -133,82 +147,56 @@
       });
     }
 
-    function handleLabourSelect() {
-      const select = document.getElementById('labourSelect');
-      const code = select.value;
-      if (!code) return;
+    function populateObs() {
+      const select = document.getElementById('obSelect');
+      obList.forEach(ob => {
+        const option = document.createElement('option');
+        option.value = ob.mbom;
+        option.textContent = `${ob.mbom} - ${ob.description} (£${ob.price})`;
+        select.appendChild(option);
+      });
+    }
 
-      const labour = labourCodes.find(l => l.code === code);
-      if (labour) {
-        const cost = labour.time * currentUser.labourRate;
-        selectedLabours.push({ ...labour, cost });
-        renderLabourList();
+    function handleObSelect() {
+      const select = document.getElementById('obSelect');
+      const mbom = select.value;
+      if (!mbom) return;
+
+      const ob = obList.find(o => o.mbom === mbom);
+      if (ob) {
+        const convertedPrice = ob.price * (currentUser.currency === 'GBP' ? 1 : currentUser.exchangeRate);
+        const reimbursedPrice = convertedPrice * (currentUser.obReimbursementRate / 100);
+        selectedOb = { ...ob, total: reimbursedPrice };
+        renderOb();
       }
       select.value = '';
     }
 
-    function handlePartSelect() {
-      const select = document.getElementById('partSelect');
-      const number = select.value;
-      if (!number) return;
-
-      const part = partsList.find(p => p.number === number);
-      if (part) {
-        const quantity = prompt(`Enter quantity for ${part.description}:`, 1);
-        if (quantity && !isNaN(quantity) && quantity > 0) {
-          const convertedPrice = part.price * (currentUser.currency === 'GBP' ? 1 : currentUser.exchangeRate);
-          const reimbursedPrice = convertedPrice * (currentUser.partReimbursementRate / 100);
-          selectedParts.push({ ...part, quantity: Number(quantity), total: reimbursedPrice * quantity });
-          renderPartList();
-        }
+    function renderOb() {
+      const obDiv = document.getElementById('obList');
+      obDiv.innerHTML = '';
+      if (selectedOb) {
+        const div = document.createElement('div');
+        div.className = 'ob-item';
+        div.innerHTML = `
+          <span>${selectedOb.mbom} - ${selectedOb.description}: ${selectedOb.total.toFixed(2)} ${currentUser.currency}</span>
+          <button onclick="removeOb()">Delete</button>
+        `;
+        obDiv.appendChild(div);
       }
-      select.value = '';
-    }
-
-    function renderLabourList() {
-      const listDiv = document.getElementById('labourList');
-      listDiv.innerHTML = '';
-      selectedLabours.forEach((labour, index) => {
-        const div = document.createElement('div');
-        div.className = 'labour-item';
-        div.innerHTML = `
-          <span>${labour.code} - ${labour.description}: ${labour.cost.toFixed(2)} ${currentUser.currency}</span>
-          <button onclick="removeLabour(${index})">Delete</button>
-        `;
-        listDiv.appendChild(div);
-      });
       updateGrandTotal();
     }
 
-    function renderPartList() {
-      const listDiv = document.getElementById('partList');
-      listDiv.innerHTML = '';
-      selectedParts.forEach((part, index) => {
-        const div = document.createElement('div');
-        div.className = 'part-item';
-        div.innerHTML = `
-          <span>${part.number} - ${part.description} x${part.quantity}: ${part.total.toFixed(2)} ${currentUser.currency}</span>
-          <button onclick="removePart(${index})">Delete</button>
-        `;
-        listDiv.appendChild(div);
-      });
-      updateGrandTotal();
-    }
-
-    function removeLabour(index) {
-      selectedLabours.splice(index, 1);
-      renderLabourList();
-    }
-
-    function removePart(index) {
-      selectedParts.splice(index, 1);
-      renderPartList();
+    function removeOb() {
+      selectedOb = null;
+      renderOb();
     }
 
     function updateGrandTotal() {
       const labourTotal = selectedLabours.reduce((sum, labour) => sum + labour.cost, 0);
       const partsTotal = selectedParts.reduce((sum, part) => sum + part.total, 0);
-      const total = labourTotal + partsTotal;
+      const obTotal = selectedOb ? selectedOb.total : 0;
+      const total = labourTotal + partsTotal + obTotal;
       document.getElementById('grandTotal').textContent = `Grand Total: ${total.toFixed(2)} ${currentUser.currency}`;
     }
 

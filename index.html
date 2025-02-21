@@ -46,6 +46,11 @@
       <label for="faultCode">Fault Code</label>
       <input type="text" id="faultCode">
 
+      <label for="travelLabour">Travel Labour Hours (0-99)</label>
+      <input type="number" id="travelLabour" min="0" max="99" onchange="handleTravelLabour()">
+
+      <div class="total" id="travelTotal">Travel Labour Total: 0</div>
+
       <label for="labourSelect">Select Labour Code</label>
       <select id="labourSelect" onchange="handleLabourSelect()">
         <option value="">--Select--</option>
@@ -77,25 +82,7 @@
       { username: 'distributor1', password: 'pass1', name: 'Distributor 1', labourRate: 50, travelRate: 20, mileageRate: 0.5, partReimbursementRate: 80, obReimbursementRate: 90, currency: 'USD', exchangeRate: 1.3 },
     ];
 
-    const labourCodes = [
-      { code: 'L001', description: 'Engine Check', time: 2 },
-      { code: 'L002', description: 'Oil Change', time: 1.5 },
-    ];
-
-    const partsList = [
-      { number: 'P001', description: 'Oil Filter', price: 20 },
-      { number: 'P002', description: 'Spark Plug', price: 15 },
-    ];
-
-    const obList = [
-      { mbom: 'OB001', description: 'Outboard Motor', price: 2000 },
-      { mbom: 'OB002', description: 'Propeller', price: 500 },
-    ];
-
     let currentUser = null;
-    let selectedLabours = [];
-    let selectedParts = [];
-    let selectedOb = null;
 
     function handleLogin() {
       const username = document.getElementById('username').value;
@@ -106,9 +93,6 @@
         document.getElementById('login-section').classList.add('hidden');
         document.getElementById('form-section').classList.remove('hidden');
         displayDistributorInfo();
-        populateLabourCodes();
-        populateParts();
-        populateObs();
       } else {
         alert('Invalid credentials');
       }
@@ -127,76 +111,27 @@
       `;
     }
 
-    function populateLabourCodes() {
-      const select = document.getElementById('labourSelect');
-      labourCodes.forEach(labour => {
-        const option = document.createElement('option');
-        option.value = labour.code;
-        option.textContent = `${labour.code} - ${labour.description} (${labour.time} hrs)`;
-        select.appendChild(option);
-      });
-    }
+    function handleTravelLabour() {
+      const input = document.getElementById('travelLabour');
+      let hours = parseInt(input.value);
 
-    function populateParts() {
-      const select = document.getElementById('partSelect');
-      partsList.forEach(part => {
-        const option = document.createElement('option');
-        option.value = part.number;
-        option.textContent = `${part.number} - ${part.description} (£${part.price})`;
-        select.appendChild(option);
-      });
-    }
-
-    function populateObs() {
-      const select = document.getElementById('obSelect');
-      obList.forEach(ob => {
-        const option = document.createElement('option');
-        option.value = ob.mbom;
-        option.textContent = `${ob.mbom} - ${ob.description} (£${ob.price})`;
-        select.appendChild(option);
-      });
-    }
-
-    function handleObSelect() {
-      const select = document.getElementById('obSelect');
-      const mbom = select.value;
-      if (!mbom) return;
-
-      const ob = obList.find(o => o.mbom === mbom);
-      if (ob) {
-        const convertedPrice = ob.price * (currentUser.currency === 'GBP' ? 1 : currentUser.exchangeRate);
-        const reimbursedPrice = convertedPrice * (currentUser.obReimbursementRate / 100);
-        selectedOb = { ...ob, total: reimbursedPrice };
-        renderOb();
+      if (hours > 10) {
+        const confirmOver10 = confirm("Do you have written authorisation above 10 hours?");
+        if (!confirmOver10) {
+          hours = 10;
+          input.value = 10;
+          alert("Decreased to maximum allowance");
+        }
       }
-      select.value = '';
-    }
 
-    function renderOb() {
-      const obDiv = document.getElementById('obList');
-      obDiv.innerHTML = '';
-      if (selectedOb) {
-        const div = document.createElement('div');
-        div.className = 'ob-item';
-        div.innerHTML = `
-          <span>${selectedOb.mbom} - ${selectedOb.description}: ${selectedOb.total.toFixed(2)} ${currentUser.currency}</span>
-          <button onclick="removeOb()">Delete</button>
-        `;
-        obDiv.appendChild(div);
-      }
+      const travelTotal = hours * currentUser.travelRate;
+      document.getElementById('travelTotal').textContent = `Travel Labour Total: ${travelTotal.toFixed(2)} ${currentUser.currency}`;
       updateGrandTotal();
     }
 
-    function removeOb() {
-      selectedOb = null;
-      renderOb();
-    }
-
     function updateGrandTotal() {
-      const labourTotal = selectedLabours.reduce((sum, labour) => sum + labour.cost, 0);
-      const partsTotal = selectedParts.reduce((sum, part) => sum + part.total, 0);
-      const obTotal = selectedOb ? selectedOb.total : 0;
-      const total = labourTotal + partsTotal + obTotal;
+      const travelTotal = parseFloat(document.getElementById('travelTotal').textContent.split(': ')[1]) || 0;
+      const total = travelTotal; // Extend this with other totals like labour, parts, OB as needed
       document.getElementById('grandTotal').textContent = `Grand Total: ${total.toFixed(2)} ${currentUser.currency}`;
     }
 

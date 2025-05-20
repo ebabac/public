@@ -8,17 +8,19 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             color: #333;
+            background-color: #f5f5f5;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
         }
         header {
             background-color: #2c3e50;
             color: white;
-            padding: 10px 20px;
+            padding: 15px 20px;
             border-radius: 5px;
             margin-bottom: 20px;
         }
@@ -26,11 +28,11 @@
             margin: 0;
         }
         .section {
-            background-color: #f8f9fa;
-            padding: 20px;
+            background-color: white;
+            padding: 25px;
             border-radius: 5px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         table {
             width: 100%;
@@ -38,7 +40,7 @@
             margin: 15px 0;
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
@@ -49,13 +51,20 @@
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border-radius: 5px;
             cursor: pointer;
             margin-right: 10px;
+            font-size: 16px;
         }
         button:hover {
             background-color: #2980b9;
+        }
+        .primary-button {
+            background-color: #2ecc71;
+        }
+        .primary-button:hover {
+            background-color: #27ae60;
         }
         .selected-row {
             background-color: #d5e8f7;
@@ -63,20 +72,22 @@
         .summary-item {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #eee;
         }
         .align-right {
             text-align: right;
         }
-        input {
-            padding: 8px;
+        input, select {
+            padding: 10px;
             margin: 5px 0;
             width: 100%;
             box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .export-container {
             margin-top: 20px;
@@ -86,128 +97,249 @@
             display: none;
         }
         #search-labor, #search-parts {
-            margin-bottom: 10px;
-            padding: 8px;
+            margin-bottom: 15px;
+            padding: 10px;
             width: 100%;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .page-indicator {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .page-indicator span {
+            width: 15px;
+            height: 15px;
+            background-color: #ddd;
+            border-radius: 50%;
+            margin: 0 5px;
+            display: inline-block;
+        }
+        .page-indicator span.active {
+            background-color: #3498db;
+        }
+        /* Login Page Styles */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+        }
+        .user-info {
+            text-align: right;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .logout-btn {
+            background-color: #e74c3c;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Warranty Claims Portal</h1>
-        </header>
-
-        <div class="section">
-            <h2>Customer Information</h2>
+    <div id="app">
+        <!-- Login Page -->
+        <div id="login-page" class="login-container">
+            <h2 class="login-title">Warranty Claims Portal</h2>
             <div class="form-group">
-                <label for="customer-name">Customer Name:</label>
-                <input type="text" id="customer-name">
+                <label for="username">Username:</label>
+                <input type="text" id="username">
             </div>
             <div class="form-group">
-                <label for="claim-reference">Claim Reference:</label>
-                <input type="text" id="claim-reference">
+                <label for="password">Password:</label>
+                <input type="password" id="password">
             </div>
-            <div class="form-group">
-                <label for="claim-date">Claim Date:</label>
-                <input type="date" id="claim-date">
-            </div>
+            <button class="primary-button" id="login-btn" style="width: 100%;">Login</button>
+            <div id="login-error" class="error-message hidden"></div>
         </div>
 
-        <div class="section">
-            <h2>Labor Selection</h2>
-            <input type="text" id="search-labor" placeholder="Search for labor code or description...">
-            <table id="labor-table">
-                <thead>
-                    <tr>
-                        <th>Labor Code</th>
-                        <th>Description</th>
-                        <th>Time (hours)</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Labor data will be populated here -->
-                </tbody>
-            </table>
-        </div>
+        <!-- Main Application (hidden until login) -->
+        <div id="main-app" class="hidden">
+            <div class="container">
+                <header>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h1>Warranty Claims Portal</h1>
+                        <div class="user-info">
+                            Logged in as: <span id="current-user"></span>
+                            <button class="logout-btn" id="logout-btn">Logout</button>
+                        </div>
+                    </div>
+                </header>
 
-        <div class="section">
-            <h2>Parts Selection</h2>
-            <input type="text" id="search-parts" placeholder="Search for part number or description...">
-            <table id="parts-table">
-                <thead>
-                    <tr>
-                        <th>Part Number</th>
-                        <th>Description</th>
-                        <th>Price (GBP)</th>
-                        <th>Quantity</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Parts data will be populated here -->
-                </tbody>
-            </table>
-        </div>
-
-        <div class="section">
-            <h2>Claim Summary</h2>
-            <h3>Selected Labor</h3>
-            <table id="selected-labor">
-                <thead>
-                    <tr>
-                        <th>Labor Code</th>
-                        <th>Description</th>
-                        <th>Time (hours)</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Selected labor will appear here -->
-                </tbody>
-            </table>
-
-            <h3>Selected Parts</h3>
-            <table id="selected-parts">
-                <thead>
-                    <tr>
-                        <th>Part Number</th>
-                        <th>Description</th>
-                        <th>Price (GBP)</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Selected parts will appear here -->
-                </tbody>
-            </table>
-
-            <div class="summary-totals">
-                <div class="summary-item">
-                    <strong>Total Labor Hours:</strong>
-                    <span id="total-labor-hours">0</span>
+                <!-- Page 1: Customer Information -->
+                <div id="page-customer" class="section">
+                    <h2>Customer Information</h2>
+                    <div class="form-group">
+                        <label for="customer-name">Customer Name:</label>
+                        <input type="text" id="customer-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="claim-reference">Claim Reference:</label>
+                        <input type="text" id="claim-reference">
+                    </div>
+                    <div class="form-group">
+                        <label for="claim-date">Claim Date:</label>
+                        <input type="date" id="claim-date">
+                    </div>
+                    <div class="navigation">
+                        <div></div> <!-- Empty div for spacing -->
+                        <button class="primary-button" id="next-to-labor">Next: Labor Selection</button>
+                    </div>
                 </div>
-                <div class="summary-item">
-                    <strong>Total Parts Cost (GBP):</strong>
-                    <span id="total-parts-cost">£0.00</span>
+
+                <!-- Page 2: Labor Selection -->
+                <div id="page-labor" class="section hidden">
+                    <h2>Labor Selection</h2>
+                    <input type="text" id="search-labor" placeholder="Search for labor code or description...">
+                    <table id="labor-table">
+                        <thead>
+                            <tr>
+                                <th>Labor Code</th>
+                                <th>Description</th>
+                                <th>Time (hours)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Labor data will be populated here -->
+                        </tbody>
+                    </table>
+                    <div class="navigation">
+                        <button id="back-to-customer">Back: Customer Information</button>
+                        <button class="primary-button" id="next-to-parts">Next: Parts Selection</button>
+                    </div>
+                </div>
+
+                <!-- Page 3: Parts Selection -->
+                <div id="page-parts" class="section hidden">
+                    <h2>Parts Selection</h2>
+                    <input type="text" id="search-parts" placeholder="Search for part number or description...">
+                    <table id="parts-table">
+                        <thead>
+                            <tr>
+                                <th>Part Number</th>
+                                <th>Description</th>
+                                <th>Price (GBP)</th>
+                                <th>Quantity</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Parts data will be populated here -->
+                        </tbody>
+                    </table>
+                    <div class="navigation">
+                        <button id="back-to-labor">Back: Labor Selection</button>
+                        <button class="primary-button" id="next-to-summary">Next: Claim Summary</button>
+                    </div>
+                </div>
+
+                <!-- Page 4: Claim Summary -->
+                <div id="page-summary" class="section hidden">
+                    <h2>Claim Summary</h2>
+                    
+                    <div class="summary-section">
+                        <h3>Customer Information</h3>
+                        <div class="summary-item">
+                            <span>Customer Name:</span>
+                            <span id="summary-customer-name"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Claim Reference:</span>
+                            <span id="summary-claim-reference"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Claim Date:</span>
+                            <span id="summary-claim-date"></span>
+                        </div>
+                    </div>
+                    
+                    <h3>Selected Labor</h3>
+                    <table id="selected-labor">
+                        <thead>
+                            <tr>
+                                <th>Labor Code</th>
+                                <th>Description</th>
+                                <th>Time (hours)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Selected labor will appear here -->
+                        </tbody>
+                    </table>
+
+                    <h3>Selected Parts</h3>
+                    <table id="selected-parts">
+                        <thead>
+                            <tr>
+                                <th>Part Number</th>
+                                <th>Description</th>
+                                <th>Price (GBP)</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Selected parts will appear here -->
+                        </tbody>
+                    </table>
+
+                    <div class="summary-totals">
+                        <div class="summary-item">
+                            <strong>Total Labor Hours:</strong>
+                            <span id="total-labor-hours">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <strong>Total Parts Cost (GBP):</strong>
+                            <span id="total-parts-cost">£0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="navigation">
+                        <button id="back-to-parts">Back: Parts Selection</button>
+                        <button class="primary-button" id="submit-claim">Submit Claim</button>
+                    </div>
+                </div>
+
+                <!-- Export Data Area (shown after submission) -->
+                <div id="export-area" class="section hidden">
+                    <h2>Export Data</h2>
+                    <p>Your claim has been submitted successfully. Copy the text below to import into your warranty claims spreadsheet:</p>
+                    <textarea id="export-text" rows="15" style="width: 100%; margin: 15px 0;"></textarea>
+                    <div style="text-align: center;">
+                        <button id="copy-export">Copy to Clipboard</button>
+                        <button id="new-claim">Start New Claim</button>
+                    </div>
+                </div>
+
+                <!-- Page indicator -->
+                <div class="page-indicator">
+                    <span id="indicator-1" class="active"></span>
+                    <span id="indicator-2"></span>
+                    <span id="indicator-3"></span>
+                    <span id="indicator-4"></span>
                 </div>
             </div>
-        </div>
-
-        <div class="export-container">
-            <button id="submit-claim">Submit Claim</button>
-            <button id="export-data">Export Data for Import</button>
-        </div>
-
-        <!-- Hidden export data area -->
-        <div id="export-area" class="hidden section">
-            <h3>Export Data</h3>
-            <p>Copy the text below to import into your warranty claims spreadsheet:</p>
-            <textarea id="export-text" rows="10" style="width: 100%"></textarea>
-            <button id="copy-export">Copy to Clipboard</button>
         </div>
     </div>
 
@@ -235,15 +367,77 @@
             { partNum: "P70045", description: "Wiper Blades", price: 22.50 }
         ];
 
+        // Authorized users
+        const users = [
+            { username: "user1", password: "pass1" },
+            { username: "user2", password: "pass2" },
+            { username: "user3", password: "pass3" }
+        ];
+
         // State for selected items
         let selectedLabor = [];
         let selectedParts = [];
+        let currentUser = "";
+
+        // Page navigation functions
+        function showPage(pageId) {
+            // Hide all pages
+            document.getElementById('page-customer').classList.add('hidden');
+            document.getElementById('page-labor').classList.add('hidden');
+            document.getElementById('page-parts').classList.add('hidden');
+            document.getElementById('page-summary').classList.add('hidden');
+            document.getElementById('export-area').classList.add('hidden');
+            
+            // Reset all indicators
+            document.getElementById('indicator-1').classList.remove('active');
+            document.getElementById('indicator-2').classList.remove('active');
+            document.getElementById('indicator-3').classList.remove('active');
+            document.getElementById('indicator-4').classList.remove('active');
+            
+            // Show the requested page
+            document.getElementById(pageId).classList.remove('hidden');
+            
+            // Activate the correct indicator
+            if (pageId === 'page-customer') {
+                document.getElementById('indicator-1').classList.add('active');
+            } else if (pageId === 'page-labor') {
+                document.getElementById('indicator-2').classList.add('active');
+            } else if (pageId === 'page-parts') {
+                document.getElementById('indicator-3').classList.add('active');
+            } else if (pageId === 'page-summary') {
+                document.getElementById('indicator-4').classList.add('active');
+                updateSummaryPage();
+            }
+        }
+
+        // Update summary page with current selections
+        function updateSummaryPage() {
+            // Update customer information in summary
+            const customerName = document.getElementById('customer-name').value;
+            const claimReference = document.getElementById('claim-reference').value;
+            const claimDate = document.getElementById('claim-date').value;
+            
+            document.getElementById('summary-customer-name').textContent = customerName || 'Not provided';
+            document.getElementById('summary-claim-reference').textContent = claimReference || 'Not provided';
+            document.getElementById('summary-claim-date').textContent = claimDate || 'Not provided';
+            
+            // Update selected items tables (these are already updated in real-time)
+            updateSelectedLaborTable();
+            updateSelectedPartsTable();
+            updateTotals();
+        }
 
         // DOM ready function
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize tables
             populateLaborTable();
             populatePartsTable();
+
+            // Set up login functionality
+            document.getElementById('login-btn').addEventListener('click', attemptLogin);
+            
+            // Set up logout functionality
+            document.getElementById('logout-btn').addEventListener('click', logout);
 
             // Event listeners for search
             document.getElementById('search-labor').addEventListener('input', function() {
@@ -254,11 +448,90 @@
                 filterTable('parts-table', this.value);
             });
 
-            // Event listeners for buttons
+            // Page navigation event listeners
+            document.getElementById('next-to-labor').addEventListener('click', function() {
+                // Validate customer information first
+                const customerName = document.getElementById('customer-name').value;
+                const claimReference = document.getElementById('claim-reference').value;
+                const claimDate = document.getElementById('claim-date').value;
+                
+                if (!customerName || !claimReference || !claimDate) {
+                    alert('Please fill in all customer information fields.');
+                    return;
+                }
+                
+                showPage('page-labor');
+            });
+            
+            document.getElementById('back-to-customer').addEventListener('click', function() {
+                showPage('page-customer');
+            });
+            
+            document.getElementById('next-to-parts').addEventListener('click', function() {
+                showPage('page-parts');
+            });
+            
+            document.getElementById('back-to-labor').addEventListener('click', function() {
+                showPage('page-labor');
+            });
+            
+            document.getElementById('next-to-summary').addEventListener('click', function() {
+                showPage('page-summary');
+            });
+            
+            document.getElementById('back-to-parts').addEventListener('click', function() {
+                showPage('page-parts');
+            });
+
+            // Submit claim event
             document.getElementById('submit-claim').addEventListener('click', submitClaim);
-            document.getElementById('export-data').addEventListener('click', exportData);
+            
+            // Export related events
             document.getElementById('copy-export').addEventListener('click', copyExport);
+            
+            // New claim button
+            document.getElementById('new-claim').addEventListener('click', startNewClaim);
         });
+
+        function attemptLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Check credentials
+            const validUser = users.find(user => 
+                user.username === username && user.password === password
+            );
+            
+            if (validUser) {
+                // Login successful
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('current-user').textContent = username;
+                currentUser = username;
+                
+                // Reset form and error
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('login-error').classList.add('hidden');
+                
+                // Start on the first page
+                showPage('page-customer');
+            } else {
+                // Login failed
+                document.getElementById('login-error').textContent = 'Invalid username or password.';
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+        
+        function logout() {
+            // Hide main app, show login page
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+            currentUser = "";
+            
+            // Reset the form (optional)
+            resetForm();
+        }
 
         function populateLaborTable() {
             const tbody = document.querySelector('#labor-table tbody');
@@ -359,6 +632,13 @@
             const tbody = document.querySelector('#selected-labor tbody');
             tbody.innerHTML = '';
 
+            if (selectedLabor.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="4" style="text-align: center;">No labor codes selected</td>';
+                tbody.appendChild(row);
+                return;
+            }
+
             selectedLabor.forEach(labor => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -382,6 +662,13 @@
         function updateSelectedPartsTable() {
             const tbody = document.querySelector('#selected-parts tbody');
             tbody.innerHTML = '';
+
+            if (selectedParts.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="6" style="text-align: center;">No parts selected</td>';
+                tbody.appendChild(row);
+                return;
+            }
 
             selectedParts.forEach(part => {
                 const row = document.createElement('tr');
@@ -466,11 +753,20 @@
                 return;
             }
 
-            // Show success message
-            alert('Claim submitted successfully! You can now export the data for your records.');
+            // Generate export data
+            generateExportData();
+            
+            // Show export area
+            document.getElementById('page-summary').classList.add('hidden');
+            document.getElementById('export-area').classList.remove('hidden');
+            
+            // Clear the page indicator
+            document.querySelectorAll('.page-indicator span').forEach(span => {
+                span.classList.remove('active');
+            });
         }
 
-        function exportData() {
+        function generateExportData() {
             // Get customer information
             const customerName = document.getElementById('customer-name').value;
             const claimReference = document.getElementById('claim-reference').value;
@@ -480,7 +776,8 @@
             let csvData = 'Warranty Claim Export\n';
             csvData += `Claim Date,${claimDate}\n`;
             csvData += `Customer Name,${customerName}\n`;
-            csvData += `Claim Reference,${claimReference}\n\n`;
+            csvData += `Claim Reference,${claimReference}\n`;
+            csvData += `Submitted By,${currentUser}\n\n`;
 
             // Add labor data
             csvData += 'LABOR\n';
@@ -498,9 +795,8 @@
             });
             csvData += `Total Parts Cost,,,£${selectedParts.reduce((sum, item) => sum + item.total, 0).toFixed(2)}\n`;
 
-            // Display the export area
+            // Display the export text
             document.getElementById('export-text').value = csvData;
-            document.getElementById('export-area').classList.remove('hidden');
         }
 
         function copyExport() {
@@ -508,6 +804,30 @@
             exportText.select();
             document.execCommand('copy');
             alert('Export data copied to clipboard!');
+        }
+        
+        function startNewClaim() {
+            // Reset the form
+            resetForm();
+            
+            // Go back to first page
+            showPage('page-customer');
+        }
+        
+        function resetForm() {
+            // Clear customer information
+            document.getElementById('customer-name').value = '';
+            document.getElementById('claim-reference').value = '';
+            document.getElementById('claim-date').value = '';
+            
+            // Clear selections
+            selectedLabor = [];
+            selectedParts = [];
+            
+            // Update UI
+            updateSelectedLaborTable();
+            updateSelectedPartsTable();
+            updateTotals();
         }
     </script>
 </body>

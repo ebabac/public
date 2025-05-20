@@ -149,8 +149,27 @@
             padding: 8px 12px;
             font-size: 14px;
         }
-        .logout-btn:hover {
-            background-color: #c0392b;
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .info-row {
+            display: flex;
+            align-items: center;
+        }
+        .info-label {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 170px;
+        }
+        .info-value {
+            font-family: monospace;
+            padding: 5px 10px;
+            background-color: white;
+            border-radius: 3px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
@@ -187,6 +206,41 @@
                 <!-- Page 1: Customer Information -->
                 <div id="page-customer" class="section">
                     <h2>Customer Information</h2>
+                    
+                    <div class="distributor-info section" style="background-color: #f8f9fa; margin-bottom: 20px; padding: 15px; border-left: 4px solid #3498db;">
+                        <h3>Distributor Information</h3>
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <div class="info-label">Distributor Name:</div>
+                                <div id="distributor-name" class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Labour Rate:</div>
+                                <div id="labour-rate" class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Travel Rate:</div>
+                                <div id="travel-rate" class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Mileage Rate:</div>
+                                <div id="mileage-rate" class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Parts Reimbursement:</div>
+                                <div id="parts-reimbursement" class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">OB Reimbursement:</div>
+                                <div id="ob-reimbursement" class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Currency:</div>
+                                <div id="currency" class="info-value">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="customer-name">Customer Name:</label>
                         <input type="text" id="customer-name">
@@ -256,19 +310,23 @@
                 <div id="page-summary" class="section hidden">
                     <h2>Claim Summary</h2>
                     
-                    <div class="summary-section">
-                        <h3>Customer Information</h3>
+                <div class="summary-section">
+                        <h3>Distributor Information</h3>
                         <div class="summary-item">
-                            <span>Customer Name:</span>
-                            <span id="summary-customer-name"></span>
+                            <span>Distributor Name:</span>
+                            <span id="summary-distributor-name"></span>
                         </div>
                         <div class="summary-item">
-                            <span>Claim Reference:</span>
-                            <span id="summary-claim-reference"></span>
+                            <span>Labour Rate:</span>
+                            <span id="summary-labour-rate"></span>
                         </div>
                         <div class="summary-item">
-                            <span>Claim Date:</span>
-                            <span id="summary-claim-date"></span>
+                            <span>Parts Reimbursement:</span>
+                            <span id="summary-parts-reimbursement"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Currency:</span>
+                            <span id="summary-currency"></span>
                         </div>
                     </div>
                     
@@ -367,11 +425,41 @@
             { partNum: "P70045", description: "Wiper Blades", price: 22.50 }
         ];
 
-        // Authorized users
+        // Authorized users with all their specific information
         const users = [
-            { username: "user1", password: "pass1" },
-            { username: "user2", password: "pass2" },
-            { username: "user3", password: "pass3" }
+            { 
+                username: "user1", 
+                password: "pass1",
+                distributorName: "Alpha Distribution Ltd",
+                labourRate: 45.00,
+                travelRate: 30.00,
+                mileageRate: 0.45,
+                partsReimbursement: 15,  // percentage
+                obReimbursement: 10,     // percentage
+                currency: "GBP"
+            },
+            { 
+                username: "user2", 
+                password: "pass2",
+                distributorName: "Beta Services Inc",
+                labourRate: 52.50,
+                travelRate: 35.00,
+                mileageRate: 0.50,
+                partsReimbursement: 12,
+                obReimbursement: 8,
+                currency: "EUR"
+            },
+            { 
+                username: "user3", 
+                password: "pass3",
+                distributorName: "Gamma Technical Solutions",
+                labourRate: 48.75,
+                travelRate: 32.50,
+                mileageRate: 0.48,
+                partsReimbursement: 18,
+                obReimbursement: 12,
+                currency: "USD"
+            }
         ];
 
         // State for selected items
@@ -514,6 +602,9 @@
                 document.getElementById('password').value = '';
                 document.getElementById('login-error').classList.add('hidden');
                 
+                // Load distributor information
+                loadDistributorInfo(validUser);
+                
                 // Start on the first page
                 showPage('page-customer');
             } else {
@@ -521,6 +612,17 @@
                 document.getElementById('login-error').textContent = 'Invalid username or password.';
                 document.getElementById('login-error').classList.remove('hidden');
             }
+        }
+        
+        function loadDistributorInfo(user) {
+            // Populate the distributor information section
+            document.getElementById('distributor-name').textContent = user.distributorName;
+            document.getElementById('labour-rate').textContent = `${user.labourRate.toFixed(2)} ${user.currency}/hr`;
+            document.getElementById('travel-rate').textContent = `${user.travelRate.toFixed(2)} ${user.currency}/hr`;
+            document.getElementById('mileage-rate').textContent = `${user.mileageRate.toFixed(2)} ${user.currency}/mile`;
+            document.getElementById('parts-reimbursement').textContent = `${user.partsReimbursement}%`;
+            document.getElementById('ob-reimbursement').textContent = `${user.obReimbursement}%`;
+            document.getElementById('currency').textContent = user.currency;
         }
         
         function logout() {
@@ -772,12 +874,25 @@
             const claimReference = document.getElementById('claim-reference').value;
             const claimDate = document.getElementById('claim-date').value;
 
+            // Get current user's information
+            const currentUserData = users.find(user => user.username === currentUser);
+
             // Create CSV-formatted data
             let csvData = 'Warranty Claim Export\n';
             csvData += `Claim Date,${claimDate}\n`;
             csvData += `Customer Name,${customerName}\n`;
             csvData += `Claim Reference,${claimReference}\n`;
-            csvData += `Submitted By,${currentUser}\n\n`;
+            csvData += `Submitted By,${currentUser}\n`;
+            csvData += `Distributor,${currentUserData.distributorName}\n`;
+            csvData += `Currency,${currentUserData.currency}\n\n`;
+
+            // Add rates information
+            csvData += 'RATES\n';
+            csvData += `Labour Rate,${currentUserData.labourRate.toFixed(2)} ${currentUserData.currency}/hr\n`;
+            csvData += `Travel Rate,${currentUserData.travelRate.toFixed(2)} ${currentUserData.currency}/hr\n`;
+            csvData += `Mileage Rate,${currentUserData.mileageRate.toFixed(2)} ${currentUserData.currency}/mile\n`;
+            csvData += `Parts Reimbursement,${currentUserData.partsReimbursement}%\n`;
+            csvData += `OB Reimbursement,${currentUserData.obReimbursement}%\n\n`;
 
             // Add labor data
             csvData += 'LABOR\n';
@@ -785,15 +900,27 @@
             selectedLabor.forEach(labor => {
                 csvData += `${labor.code},${labor.description},${labor.time}\n`;
             });
-            csvData += `Total Labor Hours,${selectedLabor.reduce((sum, item) => sum + item.time, 0).toFixed(1)}\n\n`;
+            const totalLaborHours = selectedLabor.reduce((sum, item) => sum + item.time, 0);
+            csvData += `Total Labor Hours,${totalLaborHours.toFixed(1)}\n`;
+            csvData += `Total Labor Cost,${(totalLaborHours * currentUserData.labourRate).toFixed(2)} ${currentUserData.currency}\n\n`;
 
             // Add parts data
             csvData += 'PARTS\n';
-            csvData += 'Part Number,Description,Price (GBP),Quantity,Total\n';
+            csvData += 'Part Number,Description,Price,Quantity,Total\n';
             selectedParts.forEach(part => {
                 csvData += `${part.partNum},${part.description},${part.price.toFixed(2)},${part.quantity},${part.total.toFixed(2)}\n`;
             });
-            csvData += `Total Parts Cost,,,£${selectedParts.reduce((sum, item) => sum + item.total, 0).toFixed(2)}\n`;
+            const totalPartsCost = selectedParts.reduce((sum, item) => sum + item.total, 0);
+            csvData += `Total Parts Cost,,,${totalPartsCost.toFixed(2)} ${currentUserData.currency}\n`;
+            
+            // Calculate parts reimbursement
+            const partsReimbursement = totalPartsCost * (currentUserData.partsReimbursement / 100);
+            csvData += `Parts Reimbursement (${currentUserData.partsReimbursement}%),,,${partsReimbursement.toFixed(2)} ${currentUserData.currency}\n\n`;
+            
+            // Add claim total
+            const laborCost = totalLaborHours * currentUserData.labourRate;
+            const claimTotal = laborCost + partsReimbursement;
+            csvData += `CLAIM TOTAL,,,${claimTotal.toFixed(2)} ${currentUserData.currency}\n`;
 
             // Display the export text
             document.getElementById('export-text').value = csvData;

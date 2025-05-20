@@ -403,27 +403,30 @@
 
     <script>
         // Sample data (would be replaced with your actual data)
-        const laborData = [
-            { code: "L001", description: "Engine Diagnostics", time: 1.5 },
-            { code: "L002", description: "Oil Change", time: 0.5 },
-            { code: "L003", description: "Transmission Service", time: 2.0 },
-            { code: "L004", description: "Brake Pad Replacement", time: 1.0 },
-            { code: "L005", description: "Air Filter Replacement", time: 0.3 },
-            { code: "L006", description: "Coolant Flush", time: 1.0 },
-            { code: "L007", description: "Wheel Alignment", time: 0.8 },
-            { code: "L008", description: "Tire Rotation", time: 0.5 }
-        ];
+let laborData = [];
+let partsData = [];
 
-        const partsData = [
-            { partNum: "P10045", description: "Oil Filter", price: 8.50 },
-            { partNum: "P20056", description: "Air Filter", price: 12.99 },
-            { partNum: "P30078", description: "Brake Pads (Front)", price: 45.75 },
-            { partNum: "P30079", description: "Brake Pads (Rear)", price: 39.99 },
-            { partNum: "P40023", description: "Spark Plugs (set of 4)", price: 24.50 },
-            { partNum: "P50012", description: "Coolant (1L)", price: 15.25 },
-            { partNum: "P60034", description: "Transmission Fluid (1L)", price: 18.75 },
-            { partNum: "P70045", description: "Wiper Blades", price: 22.50 }
-        ];
+// Load labor data
+fetch('laborData.json')
+  .then(response => response.json())
+  .then(data => {
+    laborData = data;
+    populateLaborTable();
+  })
+  .catch(error => {
+    console.error('Failed to load labor data:', error);
+  });
+
+// Load parts data
+fetch('partsData.json')
+  .then(response => response.json())
+  .then(data => {
+    partsData = data;
+    populatePartsTable();
+  })
+  .catch(error => {
+    console.error('Failed to load parts data:', error);
+  });
 
         // Authorized users with all their specific information
       let users = [];

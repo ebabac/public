@@ -5,172 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Warranty Claims Portal</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: #333;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        h1, h2, h3 {
-            margin: 0;
-        }
-        .section {
-            background-color: white;
-            padding: 25px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 10px;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .primary-button {
-            background-color: #2ecc71;
-        }
-        .primary-button:hover {
-            background-color: #27ae60;
-        }
-        .selected-row {
-            background-color: #d5e8f7;
-        }
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .align-right {
-            text-align: right;
-        }
-        input, select {
-            padding: 10px;
-            margin: 5px 0;
-            width: 100%;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .export-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .hidden {
-            display: none;
-        }
-        #search-labor, #search-parts {
-            margin-bottom: 15px;
-            padding: 10px;
-            width: 100%;
-        }
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .page-indicator {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .page-indicator span {
-            width: 15px;
-            height: 15px;
-            background-color: #ddd;
-            border-radius: 50%;
-            margin: 0 5px;
-            display: inline-block;
-        }
-        .page-indicator span.active {
-            background-color: #3498db;
-        }
-        /* Login Page Styles */
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .login-title {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .error-message {
-            color: #e74c3c;
-            margin-top: 10px;
-        }
-        .user-info {
-            text-align: right;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .logout-btn {
-            background-color: #e74c3c;
-            padding: 8px 12px;
-            font-size: 14px;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 10px;
-        }
-        .info-row {
-            display: flex;
-            align-items: center;
-        }
-        .info-label {
-            font-weight: bold;
-            margin-right: 10px;
-            min-width: 170px;
-        }
-        .info-value {
-            font-family: monospace;
-            padding: 5px 10px;
-            background-color: white;
-            border-radius: 3px;
-            border: 1px solid #ddd;
-        }
+        /* ... (your styles are unchanged) ... */
     </style>
 </head>
 <body>
@@ -310,7 +145,22 @@
                 <div id="page-summary" class="section hidden">
                     <h2>Claim Summary</h2>
                     
-                <div class="summary-section">
+                    <div class="summary-section">
+                        <h3>Customer Information</h3>
+                        <div class="summary-item">
+                            <span>Customer Name:</span>
+                            <span id="summary-customer-name"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Claim Reference:</span>
+                            <span id="summary-claim-reference"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Claim Date:</span>
+                            <span id="summary-claim-date"></span>
+                        </div>
+                    </div>
+                    <div class="summary-section">
                         <h3>Distributor Information</h3>
                         <div class="summary-item">
                             <span>Distributor Name:</span>
@@ -321,8 +171,20 @@
                             <span id="summary-labour-rate"></span>
                         </div>
                         <div class="summary-item">
+                            <span>Travel Rate:</span>
+                            <span id="summary-travel-rate"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Mileage Rate:</span>
+                            <span id="summary-mileage-rate"></span>
+                        </div>
+                        <div class="summary-item">
                             <span>Parts Reimbursement:</span>
                             <span id="summary-parts-reimbursement"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>OB Reimbursement:</span>
+                            <span id="summary-ob-reimbursement"></span>
                         </div>
                         <div class="summary-item">
                             <span>Currency:</span>
@@ -403,43 +265,43 @@
 
     <script>
         // Sample data (would be replaced with your actual data)
-let laborData = [];
-let partsData = [];
+        let laborData = [];
+        let partsData = [];
 
-// Load labor data
-fetch('laborData.json')
-  .then(response => response.json())
-  .then(data => {
-    laborData = data;
-    populateLaborTable();
-  })
-  .catch(error => {
-    console.error('Failed to load labor data:', error);
-  });
+        // Load labor data
+        fetch('laborData.json')
+        .then(response => response.json())
+        .then(data => {
+            laborData = data;
+            populateLaborTable();
+        })
+        .catch(error => {
+            console.error('Failed to load labor data:', error);
+        });
 
-// Load parts data
-fetch('partsData.json')
-  .then(response => response.json())
-  .then(data => {
-    partsData = data;
-    populatePartsTable();
-  })
-  .catch(error => {
-    console.error('Failed to load parts data:', error);
-  });
+        // Load parts data
+        fetch('partsData.json')
+        .then(response => response.json())
+        .then(data => {
+            partsData = data;
+            populatePartsTable();
+        })
+        .catch(error => {
+            console.error('Failed to load parts data:', error);
+        });
 
         // Authorized users with all their specific information
-      let users = [];
+        let users = [];
 
-fetch('users.json')
-  .then(response => response.json())
-  .then(data => {
-    users = data;
-  })
-  .catch(error => {
-    console.error('Error loading users.json:', error);
-    alert('Failed to load user data. Please try again later.');
-  });
+        fetch('users.json')
+        .then(response => response.json())
+        .then(data => {
+            users = data;
+        })
+        .catch(error => {
+            console.error('Error loading users.json:', error);
+            alert('Failed to load user data. Please try again later.');
+        });
 
         // State for selected items
         let selectedLabor = [];
@@ -487,6 +349,26 @@ fetch('users.json')
             document.getElementById('summary-customer-name').textContent = customerName || 'Not provided';
             document.getElementById('summary-claim-reference').textContent = claimReference || 'Not provided';
             document.getElementById('summary-claim-date').textContent = claimDate || 'Not provided';
+
+            // Update distributor info in summary
+            const currentUserData = users.find(user => user.username === currentUser);
+            if (currentUserData) {
+                document.getElementById('summary-distributor-name').textContent = currentUserData.distributorName;
+                document.getElementById('summary-labour-rate').textContent = `${currentUserData.labourRate.toFixed(2)} ${currentUserData.currency}/hr`;
+                document.getElementById('summary-travel-rate').textContent = `${currentUserData.travelRate.toFixed(2)} ${currentUserData.currency}/hr`;
+                document.getElementById('summary-mileage-rate').textContent = `${currentUserData.mileageRate.toFixed(2)} ${currentUserData.currency}/mile`;
+                document.getElementById('summary-parts-reimbursement').textContent = `${currentUserData.partsReimbursement}%`;
+                document.getElementById('summary-ob-reimbursement').textContent = `${currentUserData.obReimbursement}%`;
+                document.getElementById('summary-currency').textContent = currentUserData.currency;
+            } else {
+                document.getElementById('summary-distributor-name').textContent = '-';
+                document.getElementById('summary-labour-rate').textContent = '-';
+                document.getElementById('summary-travel-rate').textContent = '-';
+                document.getElementById('summary-mileage-rate').textContent = '-';
+                document.getElementById('summary-parts-reimbursement').textContent = '-';
+                document.getElementById('summary-ob-reimbursement').textContent = '-';
+                document.getElementById('summary-currency').textContent = '-';
+            }
             
             // Update selected items tables (these are already updated in real-time)
             updateSelectedLaborTable();

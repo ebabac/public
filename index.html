@@ -1,208 +1,514 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Warranty Claim Form</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .container { max-width: 600px; margin: auto; }
-    .hidden { display: none; }
-    label { display: block; margin-top: 10px; }
-    input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
-    .labour-list, .part-list, .ob-list { margin-top: 10px; }
-    .labour-item, .part-item, .ob-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
-    .labour-item button, .part-item button, .ob-item button { margin-left: 10px; width: 50px; }
-    .total { font-weight: bold; margin-top: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warranty Claims Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        h1, h2, h3 {
+            margin: 0;
+        }
+        .section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .selected-row {
+            background-color: #d5e8f7;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .align-right {
+            text-align: right;
+        }
+        input {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .export-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        #search-labor, #search-parts {
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div id="login-section">
-      <h2>Distributor Login</h2>
-      <label for="username">Username</label>
-      <input type="text" id="username" placeholder="Enter username">
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter password">
-      <button onclick="handleLogin()">Login</button>
+    <div class="container">
+        <header>
+            <h1>Warranty Claims Portal</h1>
+        </header>
+
+        <div class="section">
+            <h2>Customer Information</h2>
+            <div class="form-group">
+                <label for="customer-name">Customer Name:</label>
+                <input type="text" id="customer-name">
+            </div>
+            <div class="form-group">
+                <label for="claim-reference">Claim Reference:</label>
+                <input type="text" id="claim-reference">
+            </div>
+            <div class="form-group">
+                <label for="claim-date">Claim Date:</label>
+                <input type="date" id="claim-date">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Labor Selection</h2>
+            <input type="text" id="search-labor" placeholder="Search for labor code or description...">
+            <table id="labor-table">
+                <thead>
+                    <tr>
+                        <th>Labor Code</th>
+                        <th>Description</th>
+                        <th>Time (hours)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Labor data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Parts Selection</h2>
+            <input type="text" id="search-parts" placeholder="Search for part number or description...">
+            <table id="parts-table">
+                <thead>
+                    <tr>
+                        <th>Part Number</th>
+                        <th>Description</th>
+                        <th>Price (GBP)</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Parts data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Claim Summary</h2>
+            <h3>Selected Labor</h3>
+            <table id="selected-labor">
+                <thead>
+                    <tr>
+                        <th>Labor Code</th>
+                        <th>Description</th>
+                        <th>Time (hours)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Selected labor will appear here -->
+                </tbody>
+            </table>
+
+            <h3>Selected Parts</h3>
+            <table id="selected-parts">
+                <thead>
+                    <tr>
+                        <th>Part Number</th>
+                        <th>Description</th>
+                        <th>Price (GBP)</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Selected parts will appear here -->
+                </tbody>
+            </table>
+
+            <div class="summary-totals">
+                <div class="summary-item">
+                    <strong>Total Labor Hours:</strong>
+                    <span id="total-labor-hours">0</span>
+                </div>
+                <div class="summary-item">
+                    <strong>Total Parts Cost (GBP):</strong>
+                    <span id="total-parts-cost">£0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="export-container">
+            <button id="submit-claim">Submit Claim</button>
+            <button id="export-data">Export Data for Import</button>
+        </div>
+
+        <!-- Hidden export data area -->
+        <div id="export-area" class="hidden section">
+            <h3>Export Data</h3>
+            <p>Copy the text below to import into your warranty claims spreadsheet:</p>
+            <textarea id="export-text" rows="10" style="width: 100%"></textarea>
+            <button id="copy-export">Copy to Clipboard</button>
+        </div>
     </div>
 
-    <div id="form-section" class="hidden">
-      <h2>Warranty Claim Form</h2>
-      <div id="distributor-info"></div>
+    <script>
+        // Sample data (would be replaced with your actual data)
+        const laborData = [
+            { code: "L001", description: "Engine Diagnostics", time: 1.5 },
+            { code: "L002", description: "Oil Change", time: 0.5 },
+            { code: "L003", description: "Transmission Service", time: 2.0 },
+            { code: "L004", description: "Brake Pad Replacement", time: 1.0 },
+            { code: "L005", description: "Air Filter Replacement", time: 0.3 },
+            { code: "L006", description: "Coolant Flush", time: 1.0 },
+            { code: "L007", description: "Wheel Alignment", time: 0.8 },
+            { code: "L008", description: "Tire Rotation", time: 0.5 }
+        ];
 
-      <label for="obSerial">OB Serial Number (20 digits)</label>
-      <input type="text" id="obSerial" maxlength="20">
+        const partsData = [
+            { partNum: "P10045", description: "Oil Filter", price: 8.50 },
+            { partNum: "P20056", description: "Air Filter", price: 12.99 },
+            { partNum: "P30078", description: "Brake Pads (Front)", price: 45.75 },
+            { partNum: "P30079", description: "Brake Pads (Rear)", price: 39.99 },
+            { partNum: "P40023", description: "Spark Plugs (set of 4)", price: 24.50 },
+            { partNum: "P50012", description: "Coolant (1L)", price: 15.25 },
+            { partNum: "P60034", description: "Transmission Fluid (1L)", price: 18.75 },
+            { partNum: "P70045", description: "Wiper Blades", price: 22.50 }
+        ];
 
-      <label for="vesselName">Vessel Name</label>
-      <input type="text" id="vesselName">
+        // State for selected items
+        let selectedLabor = [];
+        let selectedParts = [];
 
-      <label for="caseNumber">Salesforce Case Number (8 digits)</label>
-      <input type="text" id="caseNumber" maxlength="8">
+        // DOM ready function
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tables
+            populateLaborTable();
+            populatePartsTable();
 
-      <label for="warrantyEndDate">Warranty End Date</label>
-      <input type="date" id="warrantyEndDate">
+            // Event listeners for search
+            document.getElementById('search-labor').addEventListener('input', function() {
+                filterTable('labor-table', this.value);
+            });
 
-      <label for="faultCode">Fault Code</label>
-      <input type="text" id="faultCode">
+            document.getElementById('search-parts').addEventListener('input', function() {
+                filterTable('parts-table', this.value);
+            });
 
-      <label for="labourSelect">Select Labour Code</label>
-      <select id="labourSelect" onchange="handleLabourSelect()">
-        <option value="">--Select--</option>
-      </select>
+            // Event listeners for buttons
+            document.getElementById('submit-claim').addEventListener('click', submitClaim);
+            document.getElementById('export-data').addEventListener('click', exportData);
+            document.getElementById('copy-export').addEventListener('click', copyExport);
+        });
 
-      <div class="labour-list" id="labourList"></div>
+        function populateLaborTable() {
+            const tbody = document.querySelector('#labor-table tbody');
+            tbody.innerHTML = '';
 
-      <label for="partSelect">Select Part</label>
-      <select id="partSelect" onchange="handlePartSelect()">
-        <option value="">--Select--</option>
-      </select>
+            laborData.forEach(labor => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${labor.code}</td>
+                    <td>${labor.description}</td>
+                    <td>${labor.time}</td>
+                    <td><button class="add-labor" data-code="${labor.code}">Add</button></td>
+                `;
+                tbody.appendChild(row);
+            });
 
-      <div class="part-list" id="partList"></div>
+            // Add event listeners for the buttons
+            document.querySelectorAll('.add-labor').forEach(button => {
+                button.addEventListener('click', function() {
+                    const code = this.getAttribute('data-code');
+                    addLabor(code);
+                });
+            });
+        }
 
-      <label for="obSelect">Select OB</label>
-      <select id="obSelect" onchange="handleObSelect()">
-        <option value="">--Select--</option>
-      </select>
+        function populatePartsTable() {
+            const tbody = document.querySelector('#parts-table tbody');
+            tbody.innerHTML = '';
 
-      <div class="ob-list" id="obList"></div>
+            partsData.forEach(part => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${part.partNum}</td>
+                    <td>${part.description}</td>
+                    <td>£${part.price.toFixed(2)}</td>
+                    <td><input type="number" min="1" value="1" class="part-quantity" data-part="${part.partNum}"></td>
+                    <td><button class="add-part" data-part="${part.partNum}">Add</button></td>
+                `;
+                tbody.appendChild(row);
+            });
 
-      <div class="total" id="grandTotal">Grand Total: 0</div>
-      <button onclick="confirmAndContinue()">Confirm and Continue</button>
-    </div>
-  </div>
+            // Add event listeners for the buttons
+            document.querySelectorAll('.add-part').forEach(button => {
+                button.addEventListener('click', function() {
+                    const partNum = this.getAttribute('data-part');
+                    const quantityInput = document.querySelector(`.part-quantity[data-part="${partNum}"]`);
+                    const quantity = parseInt(quantityInput.value);
+                    addPart(partNum, quantity);
+                });
+            });
+        }
 
-  <script>
-    const distributors = [
-      { username: 'distributor1', password: 'pass1', name: 'Distributor 1', labourRate: 50, travelRate: 20, mileageRate: 0.5, partReimbursementRate: 80, obReimbursementRate: 90, currency: 'USD', exchangeRate: 1.3 },
-    ];
+        function addLabor(code) {
+            // Check if already selected
+            if (selectedLabor.some(item => item.code === code)) {
+                alert('This labor code is already selected.');
+                return;
+            }
 
-    const labourCodes = [
-      { code: 'L001', description: 'Engine Check', time: 2 },
-      { code: 'L002', description: 'Oil Change', time: 1.5 },
-    ];
+            // Find the labor item
+            const labor = laborData.find(item => item.code === code);
+            if (!labor) return;
 
-    const partsList = [
-      { number: 'P001', description: 'Oil Filter', price: 20 },
-      { number: 'P002', description: 'Spark Plug', price: 15 },
-    ];
+            // Add to selected array
+            selectedLabor.push({...labor});
 
-    const obList = [
-      { mbom: 'OB001', description: 'Outboard Motor', price: 2000 },
-      { mbom: 'OB002', description: 'Propeller', price: 500 },
-    ];
+            // Update UI
+            updateSelectedLaborTable();
+            updateTotals();
+        }
 
-    let currentUser = null;
-    let selectedLabours = [];
-    let selectedParts = [];
-    let selectedOb = null;
+        function addPart(partNum, quantity) {
+            // Find the part item
+            const part = partsData.find(item => item.partNum === partNum);
+            if (!part) return;
 
-    function handleLogin() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      const user = distributors.find(d => d.username === username && d.password === password);
-      if (user) {
-        currentUser = user;
-        document.getElementById('login-section').classList.add('hidden');
-        document.getElementById('form-section').classList.remove('hidden');
-        displayDistributorInfo();
-        populateLabourCodes();
-        populateParts();
-        populateObs();
-      } else {
-        alert('Invalid credentials');
-      }
-    }
+            // Check if already selected
+            const existingIndex = selectedParts.findIndex(item => item.partNum === partNum);
+            if (existingIndex >= 0) {
+                // Update quantity if already selected
+                selectedParts[existingIndex].quantity += quantity;
+                selectedParts[existingIndex].total = selectedParts[existingIndex].quantity * part.price;
+            } else {
+                // Add new entry
+                selectedParts.push({
+                    ...part,
+                    quantity: quantity,
+                    total: quantity * part.price
+                });
+            }
 
-    function displayDistributorInfo() {
-      const infoDiv = document.getElementById('distributor-info');
-      infoDiv.innerHTML = `
-        <p><strong>Distributor:</strong> ${currentUser.name}</p>
-        <p><strong>Labour Rate:</strong> ${currentUser.labourRate} ${currentUser.currency}</p>
-        <p><strong>Travel Rate:</strong> ${currentUser.travelRate} ${currentUser.currency}</p>
-        <p><strong>Mileage Rate:</strong> ${currentUser.mileageRate} ${currentUser.currency}/mile</p>
-        <p><strong>Part Reimbursement Rate:</strong> ${currentUser.partReimbursementRate}%</p>
-        <p><strong>OB Reimbursement Rate:</strong> ${currentUser.obReimbursementRate}%</p>
-        <p><strong>Currency:</strong> ${currentUser.currency}</p>
-      `;
-    }
+            // Update UI
+            updateSelectedPartsTable();
+            updateTotals();
+        }
 
-    function populateLabourCodes() {
-      const select = document.getElementById('labourSelect');
-      labourCodes.forEach(labour => {
-        const option = document.createElement('option');
-        option.value = labour.code;
-        option.textContent = `${labour.code} - ${labour.description} (${labour.time} hrs)`;
-        select.appendChild(option);
-      });
-    }
+        function updateSelectedLaborTable() {
+            const tbody = document.querySelector('#selected-labor tbody');
+            tbody.innerHTML = '';
 
-    function populateParts() {
-      const select = document.getElementById('partSelect');
-      partsList.forEach(part => {
-        const option = document.createElement('option');
-        option.value = part.number;
-        option.textContent = `${part.number} - ${part.description} (£${part.price})`;
-        select.appendChild(option);
-      });
-    }
+            selectedLabor.forEach(labor => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${labor.code}</td>
+                    <td>${labor.description}</td>
+                    <td>${labor.time}</td>
+                    <td><button class="remove-labor" data-code="${labor.code}">Remove</button></td>
+                `;
+                tbody.appendChild(row);
+            });
 
-    function populateObs() {
-      const select = document.getElementById('obSelect');
-      obList.forEach(ob => {
-        const option = document.createElement('option');
-        option.value = ob.mbom;
-        option.textContent = `${ob.mbom} - ${ob.description} (£${ob.price})`;
-        select.appendChild(option);
-      });
-    }
+            // Add event listeners for removal
+            document.querySelectorAll('.remove-labor').forEach(button => {
+                button.addEventListener('click', function() {
+                    const code = this.getAttribute('data-code');
+                    removeLabor(code);
+                });
+            });
+        }
 
-    function handleObSelect() {
-      const select = document.getElementById('obSelect');
-      const mbom = select.value;
-      if (!mbom) return;
+        function updateSelectedPartsTable() {
+            const tbody = document.querySelector('#selected-parts tbody');
+            tbody.innerHTML = '';
 
-      const ob = obList.find(o => o.mbom === mbom);
-      if (ob) {
-        const convertedPrice = ob.price * (currentUser.currency === 'GBP' ? 1 : currentUser.exchangeRate);
-        const reimbursedPrice = convertedPrice * (currentUser.obReimbursementRate / 100);
-        selectedOb = { ...ob, total: reimbursedPrice };
-        renderOb();
-      }
-      select.value = '';
-    }
+            selectedParts.forEach(part => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${part.partNum}</td>
+                    <td>${part.description}</td>
+                    <td>£${part.price.toFixed(2)}</td>
+                    <td>${part.quantity}</td>
+                    <td>£${part.total.toFixed(2)}</td>
+                    <td><button class="remove-part" data-part="${part.partNum}">Remove</button></td>
+                `;
+                tbody.appendChild(row);
+            });
 
-    function renderOb() {
-      const obDiv = document.getElementById('obList');
-      obDiv.innerHTML = '';
-      if (selectedOb) {
-        const div = document.createElement('div');
-        div.className = 'ob-item';
-        div.innerHTML = `
-          <span>${selectedOb.mbom} - ${selectedOb.description}: ${selectedOb.total.toFixed(2)} ${currentUser.currency}</span>
-          <button onclick="removeOb()">Delete</button>
-        `;
-        obDiv.appendChild(div);
-      }
-      updateGrandTotal();
-    }
+            // Add event listeners for removal
+            document.querySelectorAll('.remove-part').forEach(button => {
+                button.addEventListener('click', function() {
+                    const partNum = this.getAttribute('data-part');
+                    removePart(partNum);
+                });
+            });
+        }
 
-    function removeOb() {
-      selectedOb = null;
-      renderOb();
-    }
+        function removeLabor(code) {
+            selectedLabor = selectedLabor.filter(item => item.code !== code);
+            updateSelectedLaborTable();
+            updateTotals();
+        }
 
-    function updateGrandTotal() {
-      const labourTotal = selectedLabours.reduce((sum, labour) => sum + labour.cost, 0);
-      const partsTotal = selectedParts.reduce((sum, part) => sum + part.total, 0);
-      const obTotal = selectedOb ? selectedOb.total : 0;
-      const total = labourTotal + partsTotal + obTotal;
-      document.getElementById('grandTotal').textContent = `Grand Total: ${total.toFixed(2)} ${currentUser.currency}`;
-    }
+        function removePart(partNum) {
+            selectedParts = selectedParts.filter(item => item.partNum !== partNum);
+            updateSelectedPartsTable();
+            updateTotals();
+        }
 
-    function confirmAndContinue() {
-      alert('Claim confirmed!');
-    }
-  </script>
+        function updateTotals() {
+            // Calculate labor hours
+            const totalLaborHours = selectedLabor.reduce((sum, item) => sum + item.time, 0);
+            document.getElementById('total-labor-hours').textContent = totalLaborHours.toFixed(1);
+
+            // Calculate parts cost
+            const totalPartsCost = selectedParts.reduce((sum, item) => sum + item.total, 0);
+            document.getElementById('total-parts-cost').textContent = `£${totalPartsCost.toFixed(2)}`;
+        }
+
+        function filterTable(tableId, searchText) {
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tr');
+
+            searchText = searchText.toLowerCase();
+
+            // Start from 1 to skip the header row
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                for (let j = 0; j < cells.length - 1; j++) { // Skip the action column
+                    if (cells[j].textContent.toLowerCase().includes(searchText)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+
+        function submitClaim() {
+            // Validate customer information
+            const customerName = document.getElementById('customer-name').value;
+            const claimReference = document.getElementById('claim-reference').value;
+            const claimDate = document.getElementById('claim-date').value;
+
+            if (!customerName || !claimReference || !claimDate) {
+                alert('Please fill in all customer information fields.');
+                return;
+            }
+
+            // Validate at least one item is selected
+            if (selectedLabor.length === 0 && selectedParts.length === 0) {
+                alert('Please select at least one labor code or part.');
+                return;
+            }
+
+            // Show success message
+            alert('Claim submitted successfully! You can now export the data for your records.');
+        }
+
+        function exportData() {
+            // Get customer information
+            const customerName = document.getElementById('customer-name').value;
+            const claimReference = document.getElementById('claim-reference').value;
+            const claimDate = document.getElementById('claim-date').value;
+
+            // Create CSV-formatted data
+            let csvData = 'Warranty Claim Export\n';
+            csvData += `Claim Date,${claimDate}\n`;
+            csvData += `Customer Name,${customerName}\n`;
+            csvData += `Claim Reference,${claimReference}\n\n`;
+
+            // Add labor data
+            csvData += 'LABOR\n';
+            csvData += 'Labor Code,Description,Time (hours)\n';
+            selectedLabor.forEach(labor => {
+                csvData += `${labor.code},${labor.description},${labor.time}\n`;
+            });
+            csvData += `Total Labor Hours,${selectedLabor.reduce((sum, item) => sum + item.time, 0).toFixed(1)}\n\n`;
+
+            // Add parts data
+            csvData += 'PARTS\n';
+            csvData += 'Part Number,Description,Price (GBP),Quantity,Total\n';
+            selectedParts.forEach(part => {
+                csvData += `${part.partNum},${part.description},${part.price.toFixed(2)},${part.quantity},${part.total.toFixed(2)}\n`;
+            });
+            csvData += `Total Parts Cost,,,£${selectedParts.reduce((sum, item) => sum + item.total, 0).toFixed(2)}\n`;
+
+            // Display the export area
+            document.getElementById('export-text').value = csvData;
+            document.getElementById('export-area').classList.remove('hidden');
+        }
+
+        function copyExport() {
+            const exportText = document.getElementById('export-text');
+            exportText.select();
+            document.execCommand('copy');
+            alert('Export data copied to clipboard!');
+        }
+    </script>
 </body>
 </html>

@@ -427,40 +427,238 @@
 
         // Authorized users with all their specific information
         const users = [
-            { 
-                username: "user1", 
-                password: "pass1",
-                distributorName: "Alpha Distribution Ltd",
-                labourRate: 45.00,
-                travelRate: 30.00,
-                mileageRate: 0.45,
-                partsReimbursement: 15,  // percentage
-                obReimbursement: 10,     // percentage
-                currency: "GBP"
-            },
-            { 
-                username: "user2", 
-                password: "pass2",
-                distributorName: "Beta Services Inc",
-                labourRate: 52.50,
-                travelRate: 35.00,
-                mileageRate: 0.50,
-                partsReimbursement: 12,
-                obReimbursement: 8,
-                currency: "EUR"
-            },
-            { 
-                username: "user3", 
-                password: "pass3",
-                distributorName: "Gamma Technical Solutions",
-                labourRate: 48.75,
-                travelRate: 32.50,
-                mileageRate: 0.48,
-                partsReimbursement: 18,
-                obReimbursement: 12,
-                currency: "USD"
-            }
-        ];
+  {
+    "username": "user1",
+    "password": "Bar70pass",
+    "distributorName": "Barrus",
+    "labourRate": 70,
+    "travelRate": 56,
+    "mileageRate": 1,
+    "partsReimbursement": 1.05,
+    "obReimbursement": 1.02,
+    "currency": "GBP"
+  },
+  {
+    "username": "user2",
+    "password": "Bsl170pass",
+    "distributorName": "Boatswains Locker",
+    "labourRate": 170,
+    "travelRate": 136,
+    "mileageRate": 1.5,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "USD"
+  },
+  {
+    "username": "user3",
+    "password": "Boa245dess",
+    "distributorName": "Boatswains Locker - In Demand",
+    "labourRate": 245,
+    "travelRate": 196,
+    "mileageRate": 1.5,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "USD"
+  },
+  {
+    "username": "user4",
+    "password": "Car65rass",
+    "distributorName": "Cartello",
+    "labourRate": 65,
+    "travelRate": 57,
+    "mileageRate": 1,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "EUR"
+  },
+  {
+    "username": "user5",
+    "password": "Bsl65pass",
+    "distributorName": "De Wolf",
+    "labourRate": 65,
+    "travelRate": 57,
+    "mileageRate": 1,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "EUR"
+  },
+  {
+    "username": "user6",
+    "password": "DOC70pOss",
+    "distributorName": "DOC",
+    "labourRate": 70,
+    "travelRate": 56,
+    "mileageRate": 1,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "GBP"
+  },
+  {
+    "username": "user7",
+    "password": "Dpo85rpss",
+    "distributorName": "Dpower",
+    "labourRate": 85,
+    "travelRate": 68,
+    "mileageRate": 1,
+    "partsReimbursement": 1.2,
+    "obReimbursement": 1.05,
+    "currency": "EUR"
+  },
+  {
+    "username": "user8",
+    "password": "Bsl125pass",
+    "distributorName": "Erling Sande",
+    "labourRate": 125,
+    "travelRate": 100,
+    "mileageRate": 1,
+    "partsReimbursement": 1.2,
+    "obReimbursement": 1.05,
+    "currency": "GBP"
+  },
+  {
+    "username": "user9",
+    "password": "Fen65ress",
+    "distributorName": "Fenwick",
+    "labourRate": 65,
+    "travelRate": 57,
+    "mileageRate": 1,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "EUR"
+  },
+  {
+    "username": "user10",
+    "password": "Bsl150pass",
+    "distributorName": "Gulf Yachts",
+    "labourRate": 150,
+    "travelRate": 120,
+    "mileageRate": 1.5,
+    "partsReimbursement": 1.2,
+    "obReimbursement": 1.05,
+    "currency": "USD"
+  },
+  {
+    "username": "user11",
+    "password": "JTC150dTss",
+    "distributorName": "JTC",
+    "labourRate": 150,
+    "travelRate": 120,
+    "mileageRate": 1.5,
+    "partsReimbursement": 1.2,
+    "obReimbursement": 1.05,
+    "currency": "USD"
+  },
+  {
+    "username": "user12",
+    "password": "Peo150pss",
+    "distributorName": "PE Outboards",
+    "labourRate": 150,
+    "travelRate": 120,
+    "mileageRate": 2,
+    "partsReimbursement": 1.2,
+    "obReimbursement": 1.1,
+    "currency": "AUD"
+  },
+  {
+    "username": "user13",
+    "password": "Bsl170pass",
+    "distributorName": "Ring Power",
+    "labourRate": 170,
+    "travelRate": 136,
+    "mileageRate": 1.5,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "USD"
+  },
+  {
+    "username": "user14",
+    "password": "Bsl65pass",
+    "distributorName": "Sole Iberia",
+    "labourRate": 65,
+    "travelRate": 57,
+    "mileageRate": 1,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "EUR"
+  },
+  {
+    "username": "user15",
+    "password": "Sou55poss",
+    "distributorName": "Soungjin",
+    "labourRate": 55,
+    "travelRate": 44,
+    "mileageRate": 1,
+    "partsReimbursement": 1.2,
+    "obReimbursement": 1.1,
+    "currency": "GBP"
+  },
+  {
+    "username": "user16",
+    "password": "Bsl70pass",
+    "distributorName": "Sports Marine",
+    "labourRate": 70,
+    "travelRate": 56,
+    "mileageRate": 1,
+    "partsReimbursement": 1.2,
+    "obReimbursement": 1.1,
+    "currency": "GBP"
+  },
+  {
+    "username": "user17",
+    "password": "TDO170dDss",
+    "distributorName": "TDO",
+    "labourRate": 170,
+    "travelRate": 136,
+    "mileageRate": 1.5,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "USD"
+  },
+  {
+    "username": "user18",
+    "password": "TMI60pMss",
+    "distributorName": "TMI",
+    "labourRate": 60,
+    "travelRate": 48,
+    "mileageRate": 1,
+    "partsReimbursement": 1.2,
+    "obReimbursement": 1.1,
+    "currency": "GBP"
+  },
+  {
+    "username": "user19",
+    "password": "Waj170dass",
+    "distributorName": "Wajax",
+    "labourRate": 170,
+    "travelRate": 136,
+    "mileageRate": 1.5,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "CAD"
+  },
+  {
+    "username": "user20",
+    "password": "Wat65rass",
+    "distributorName": "Watermota",
+    "labourRate": 65,
+    "travelRate": 57,
+    "mileageRate": 1,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "EUR"
+  },
+  {
+    "username": "user21",
+    "password": "Zoi65ross",
+    "distributorName": "Zois",
+    "labourRate": 65,
+    "travelRate": 57,
+    "mileageRate": 1,
+    "partsReimbursement": 1.15,
+    "obReimbursement": 1.05,
+    "currency": "EUR"
+  }
+];
 
         // State for selected items
         let selectedLabor = [];
